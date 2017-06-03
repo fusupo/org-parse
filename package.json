@@ -1,0 +1,18 @@
+{
+  "name": "org-parse",
+  "version": "1.0.1",
+  "description": "",
+  "main": "./main.js",
+  "scripts": {
+    "test": "jest --watch"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "org": "^0.2.0",
+    "orgmode": "^2.2.1"
+  },
+  "devDependencies": {
+    "jest": "^20.0.4"
+  }
+}
