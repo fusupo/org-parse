@@ -1,6 +1,6 @@
 const OrgHeadLine = require('./org-headline');
 
-const headline = new OrgHeadLine(
+const headline = OrgHeadLine.parse(
   '** TODO Practice Typing 15mins                                       :@computer:some_other_tag:'
 );
 

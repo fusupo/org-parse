@@ -7,7 +7,7 @@ const OrgHeadLine = require('./org-headline');
 class OrgNode {
   constructor(srcStr) {
     let srcLines = srcStr.split('\n');
-    this.headline = new OrgHeadLine(srcLines[0]);
+    this.headline = OrgHeadLine.parse(srcLines[0]);
     this.scheduled = null;
     this.closed = null;
     // this.dedline = null;
