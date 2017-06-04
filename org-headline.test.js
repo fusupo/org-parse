@@ -1,7 +1,7 @@
 const OrgHeadLine = require('./org-headline');
 
 const headline = new OrgHeadLine(
-  '** TODO Practice Typing 15mins                                       :@computer:'
+  '** TODO Practice Typing 15mins                                       :@computer:some_other_tag:'
 );
 
 test('exists', () => {
@@ -30,4 +30,5 @@ test('has tags', () => {
   expect(headline.tags).toBeDefined();
   expect(headline.tags).toBeInstanceOf(Array);
   expect(headline.tags[0]).toBe('@computer');
+  expect(headline.tags[1]).toBe('some_other_tag');
 });

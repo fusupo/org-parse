@@ -28,42 +28,49 @@ const colors = [
 
 class OrgHeadLine {
   constructor(srcStr) {
-    let idx = 0;
-    let token = '';
     this.tags = [];
     this.content = null;
     this.todoKeyword = null;
     this.todoKeywordColor = null;
-    do {
-      token = srcStr[idx];
-      idx++;
-    } while (token === '*' && idx < srcStr.length);
-    this.level = idx - 1;
-    let rawHeadline = srcStr.slice(idx);
+    let idx = 0;
+    let rawHeadline;
+
     // parse todo keyword
     idx = 0;
     let foundKeyword = false;
     do {
       let keyword = keywords[idx];
-      if (rawHeadline.startsWith(keyword)) {
+      let re = new RegExp(`^(\\*+)(?: +${keyword})(?: +(.*?))?[ \\t]*$`, 'gm');
+      let match = re.exec(srcStr);
+      if (match !== null) {
         foundKeyword = true;
-        rawHeadline = rawHeadline.slice(keyword.length);
         this.todoKeyword = keyword;
         this.todoKeywordColor = colors[idx];
+        this.level = match[1].length;
+        rawHeadline = match[2];
       }
       idx++;
     } while (idx < keywords.length && foundKeyword === false);
 
+    // or parse normal
+    if (idx === keywords.length && foundKeyword === false) {
+      let re = /^(\*+)(?: +(.*?))?[ \t]*$/g;
+      let match = re.exec(srcStr);
+      this.level = match[1].length;
+      rawHeadline = match[2];
+    }
+
     // parse tags
     this.tags = [];
-    while (rawHeadline.endsWith(':')) {
-      rawHeadline = rawHeadline.slice(0, rawHeadline.length - 1);
-      let lastIdx = rawHeadline.lastIndexOf(':');
-      if (lastIdx > -1 && rawHeadline[lastIdx + 1] !== ' ') {
-        this.tags.unshift(rawHeadline.slice(lastIdx + 1));
-        rawHeadline = rawHeadline.slice(0, lastIdx + 1);
+    let re = /(?:\:)([^\:\n ]*)/g;
+    let match = re.exec(rawHeadline);
+    while (match !== null) {
+      if (match[1] !== '') {
+        this.tags.push(match[1]);
       }
+      match = re.exec(rawHeadline);
     }
+    rawHeadline = rawHeadline.slice(0, rawHeadline.indexOf(this.tags[0]) - 1);
     this.content = rawHeadline.trim();
   }
 }
