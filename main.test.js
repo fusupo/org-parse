@@ -13,6 +13,6 @@ test('does something', () => {
     expect(res).toBeInstanceOf(Object);
     expect(res).toBeInstanceOf(Object);
     expect(res.nodes).toBeInstanceOf(Object);
-    expect(res.tree).toBeInstanceOf(OrgTree);
+    expect(res.tree).toBeInstanceOf(Object);
   });
 });

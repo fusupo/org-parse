@@ -1,6 +1,10 @@
 class OrgLogbook {
-  constructor(name) {
-    this.log = [];
+  static new(name) {
+    let ret = {
+      name: name || 'logbook',
+      log: []
+    };
+    return ret;
   }
 
   // static parse(srcStr){
@@ -23,8 +27,9 @@ class OrgLogbook {
   //   }
   // }
 
-  insert(logItem) {
-    this.log.push(logItem);
+  static insert(logBook, logItem) {
+    logBook.log.push(logItem);
+    return logBook;
   }
 }
 

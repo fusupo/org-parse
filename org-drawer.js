@@ -1,12 +1,13 @@
 class OrgDrawer {
-  constructor(name) {
-    this.name = name;
-    this.properties = [];
+  static new(name) {
+    var ret = {};
+    ret.name = name;
+    ret.properties = [];
+    return ret;
   }
 
-  static parse(srcStr) {
+  static parseKeyVal(srcStr) {
     if (srcStr.length > 0) {
-      let keyval = {};
       let idx = 0;
       let colonCount = 0;
       do {
@@ -17,15 +18,25 @@ class OrgDrawer {
       let key = srcStr.slice(1, idx - 1);
       let val = srcStr.slice(idx).trim();
       // maybe parse val into OrgTimestamp/Number/etc..
-      keyval[key] = val;
-      return keyval;
+      return [key, val];
     } else {
       throw new Error('empty drawer property string');
     }
   }
 
-  insert(keyval) {
-    this.properties.push(keyval);
+  static insert(drawer, keyval) {
+    drawer.properties.push(keyval);
+    return drawer;
+  }
+
+  static clone(drawer) {
+    let ret = OrgDrawer.new(drawer.name);
+    for (let i in drawer.properties) {
+      var srcKeyval = drawer.properties[i];
+      var targKeyval = [srcKeyval[0], srcKeyval[1]];
+      ret.properties.push(targKeyval);
+    }
+    return ret;
   }
 }
 

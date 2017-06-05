@@ -1,7 +1,9 @@
 class OrgTree {
-  constructor(node) {
-    this.node = node;
-    this.children = [];
+  static new(node) {
+    return {
+      node,
+      children: []
+    };
   }
 }
 
