@@ -1,3 +1,5 @@
+const padStart = require('./utils').padStart;
+
 class OrgDrawer {
   static new(name) {
     var ret = {};
@@ -37,6 +39,21 @@ class OrgDrawer {
       ret.properties.push(targKeyval);
     }
     return ret;
+  }
+
+  static serialize(drawer, level = 1) {
+    let r = '';
+    if (drawer.properties.length > 0) {
+      r += padStart(':PROPERTIES:', level + 1, ' ') + '\n';
+      for (let i in drawer.properties) {
+        let prop = drawer.properties[i];
+        let mPad = prop[0].length < 8 ? 9 - prop[0].length : 1;
+        r += padStart(`:${prop[0]}:`, level + 1, ' ');
+        r += padStart(`${prop[1]}`, mPad, ' ') + '\n';
+      }
+      r += padStart(':END:', level + 1, ' ') + '\n';
+    }
+    return r;
   }
 }
 

@@ -17,7 +17,8 @@ describe('has static method "parse"', () => {
     let ts = OrgTimestamp.parse(dummyInputA);
     expect(ts.year).toBe(2017);
     expect(ts.month).toBe(1);
-    expect(ts.day).toBe(8);
+    expect(ts.date).toBe(8);
+    expect(ts.day).toBe('Sun');
     expect(ts.hour).toBe(12);
     expect(ts.minute).toBe(30);
   });

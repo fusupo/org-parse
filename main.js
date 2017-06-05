@@ -10,11 +10,11 @@ const createNodeMaybe = srcStr => {
   }
 };
 
-const parseTree = (parentTree, nodes) => {
+const parseTree = (parentTree, nodes, header) => {
   let idx = 0;
-  const innerFunc = pt => {
+  const innerFunc = (pt, h) => {
     let currNode = nodes[idx];
-    let currTree = OrgTree.new(currNode);
+    let currTree = OrgTree.new(currNode, h);
     idx++;
     pt.children.push(currTree);
     while (idx < nodes.length && nodes[idx].level === currNode.level + 1) {
@@ -24,7 +24,7 @@ const parseTree = (parentTree, nodes) => {
       innerFunc(pt);
     }
   };
-  innerFunc(parentTree);
+  innerFunc(parentTree, header);
 };
 
 const parseOrg = srcStr =>
@@ -38,8 +38,13 @@ const parseOrg = srcStr =>
         nodes.push(node);
       }
     }
-    parseTree(tree, nodes);
+    parseTree(tree, nodes, nodesSrc[0]); //super hacky to save to document header!!!
     resolve({ nodes, tree });
   });
 
-module.exports = parseOrg;
+const serializeTree = tree => {
+  return OrgTree.serialize(tree);
+};
+
+module.exports.parseOrg = parseOrg;
+module.exports.serializeTree = serializeTree;

@@ -2,6 +2,7 @@ const OrgTimestamp = require('./org-timestamp');
 const OrgLogbook = require('./org-logbook');
 const OrgDrawer = require('./org-drawer');
 const OrgHeadLine = require('./org-headline');
+const padStart = require('./utils').padStart;
 
 const org_scheduled_start_re = /^[ \t]*SCHEDULED:[ \t]*/;
 const org_closed_start_re = /^[ \t]*CLOSED:[ \t]*$/;
@@ -19,9 +20,9 @@ class OrgNode {
     ret.closed = null;
     // ret.deadline = null;
     ret.propDrawer = OrgDrawer.new('PROPERTIES');
-    ret.logbook = OrgLogbook.new('LOGBOOK');
-    ret.opened = undefined;
-    ret.body = '';
+    ret.logbook = null;
+    ret.opened = null;
+    ret.body = null;
 
     let idx = 1;
     while (idx < srcLines.length) {
@@ -40,21 +41,23 @@ class OrgNode {
           !srcLines[endIdx].match(org_property_end_re)
         ) {
           let keyval = OrgDrawer.parseKeyVal(srcLines[endIdx].trim());
-          console.log(keyval);
+          //console.log(keyval);
           ret.propDrawer = OrgDrawer.insert(ret.propDrawer, keyval);
           endIdx++;
         }
         idx = endIdx;
       } else if (srcLine.match(org_logbook_start_re)) {
         // :LOGBOOK:
+        let logbookSrc = '';
         let endIdx = idx + 1;
         while (
           endIdx < srcLines.length &&
           !srcLines[endIdx].match(org_property_end_re)
         ) {
-          ret.logbook = OrgLogbook.insert(ret.logbook, srcLines[endIdx].trim());
+          logbookSrc += srcLines[endIdx] + '\n';
           endIdx++;
         }
+        ret.logbook = OrgLogbook.parse(logbookSrc);
         idx = endIdx;
       } else {
         // else if(srcLine.startsWith('OPENED:')){
@@ -62,9 +65,10 @@ class OrgNode {
         // }
         let endIdxX = idx;
         let line = srcLines[endIdxX].trim();
+        ret.body = [];
         while (endIdxX < srcLines.length) {
           line = srcLines[endIdxX].trim();
-          ret.body += line + ' ';
+          ret.body.push(line);
           endIdxX++;
         }
         idx = endIdxX;
@@ -72,6 +76,41 @@ class OrgNode {
       idx++;
     }
     return ret;
+  }
+
+  static serialize(node) {
+    const level = node.headline.level || 1;
+    let r = '';
+    // HEADLINE
+    r += OrgHeadLine.serialize(node.headline);
+    // SCHEDULED:
+    if (node.scheduled) {
+      r += padStart(
+        `SCHEDULED: ${OrgTimestamp.serialize(node.scheduled)}`,
+        level + 1,
+        ' '
+      );
+      r += '\n';
+    }
+    // CLOSED:
+    if (node.closed) {
+      r += padStart(
+        `CLOSED: ${OrgTimestamp.serialize(node.closed)}`,
+        level + 1,
+        ' '
+      );
+      r += '\n';
+    }
+    // :PROPERTIES:
+    r += OrgDrawer.serialize(node.propDrawer, level);
+    // :LOGBOOK:
+    r += node.logbook ? OrgLogbook.serialize(node.logbook, level) : '';
+    // Body
+    for (let i in node.body) {
+      r += padStart(node.body[i], level + 1, ' ');
+      if (i < node.body.length) r += '\n';
+    }
+    return r;
   }
 }
 
