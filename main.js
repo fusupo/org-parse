@@ -1,5 +1,7 @@
 const OrgTree = require('./org-tree');
 const OrgNode = require('./org-node');
+const nodeHasActiveTimeStamp_p = require('./utils').nodeHasActiveTimeStamp_p;
+const activeTimeStampFromNode = require('./utils').activeTimeStampFromNode;
 
 const createNodeMaybe = srcStr => {
   if (srcStr[0] === '*') {
@@ -10,21 +12,27 @@ const createNodeMaybe = srcStr => {
   }
 };
 
-const parseTree = (parentTree, nodes, header) => {
+const parseTree = (parentTree, nodes) => {
   let idx = 0;
-  const innerFunc = (pt, h) => {
+  const innerFunc = pt => {
     let currNode = nodes[idx];
-    let currTree = OrgTree.new(currNode, h);
+    let currTree = OrgTree.new(currNode);
     idx++;
     pt.children.push(currTree);
-    while (idx < nodes.length && nodes[idx].level === currNode.level + 1) {
+    while (
+      idx < nodes.length &&
+      nodes[idx].headline.level === currNode.headline.level + 1
+    ) {
       innerFunc(currTree);
     }
-    if (idx < nodes.length && currNode.level === nodes[idx].level) {
+    if (
+      idx < nodes.length &&
+      currNode.headline.level === nodes[idx].headline.level
+    ) {
       innerFunc(pt);
     }
   };
-  innerFunc(parentTree, header);
+  innerFunc(parentTree);
 };
 
 const parseOrg = srcStr =>
@@ -38,7 +46,8 @@ const parseOrg = srcStr =>
         nodes.push(node);
       }
     }
-    parseTree(tree, nodes, nodesSrc[0]); //super hacky to save to document header!!!
+    parseTree(tree, nodes);
+    tree.header = nodesSrc[0]; //super hacky to save to document header!!!
     resolve({ nodes, tree });
   });
 
@@ -46,5 +55,11 @@ const serializeTree = tree => {
   return OrgTree.serialize(tree);
 };
 
+let utils = {
+  nodeHasActiveTimeStamp_p,
+  activeTimeStampFromNode
+};
+
 module.exports.parseOrg = parseOrg;
 module.exports.serializeTree = serializeTree;
+module.exports.utils = utils;

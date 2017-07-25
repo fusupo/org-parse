@@ -41,7 +41,6 @@ class OrgNode {
           !srcLines[endIdx].match(org_property_end_re)
         ) {
           let keyval = OrgDrawer.parseKeyVal(srcLines[endIdx].trim());
-          //console.log(keyval);
           ret.propDrawer = OrgDrawer.insert(ret.propDrawer, keyval);
           endIdx++;
         }
