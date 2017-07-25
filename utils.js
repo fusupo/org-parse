@@ -7,4 +7,14 @@ const padStart = (is, tl, ps) => {
   return os;
 };
 
+const nodeHasActiveTimeStamp_p = n => {
+  return n.scheduled !== null;
+};
+
+const activeTimeStampFromNode = n => {
+  return n.scheduled;
+};
+
 module.exports.padStart = padStart;
+module.exports.nodeHasActiveTimeStamp_p = nodeHasActiveTimeStamp_p;
+module.exports.activeTimeStampFromNode = activeTimeStampFromNode;
