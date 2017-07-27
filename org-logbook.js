@@ -81,7 +81,7 @@ class OrgLogbook {
         };
         break;
     }
-    if (lines.length < 1) {
+    if (lines.length > 1) {
       lines.shift();
       ret.text = lines.join('\n');
     }
@@ -103,10 +103,13 @@ class OrgLogbook {
       timestamp: ts
     };
 
-    if (lines.length < 1) {
+    console.log(lines.length);
+    if (lines.length > 1) {
       lines.shift();
       ret.text = lines.join('\n');
+      console.log(lines.join('\n'));
     }
+
     return ret;
   }
 
