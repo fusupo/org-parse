@@ -16,15 +16,83 @@ class OrgLogbook {
     srcItems.shift(); //using regex above first item is always empty string
     for (let i in srcItems) {
       let srcParts = srcItems[i].split('\n');
-      let item = [];
+      let item;
       // likewise here the last item is always empty string
-      for (let j = 0; j < srcParts.length - 1; j++) {
-        // TODO: parse at least the headline here
-        item.push(srcParts[j].trim());
+      let headlineParts = srcParts[0].split(' ');
+      switch (headlineParts[0]) {
+        case 'State':
+          item = OrgLogbook.parseStateEntry(srcParts);
+          break;
+        case 'Note':
+          item = OrgLogbook.parseNoteEntry(srcParts);
+          break;
+        default:
+          item = { type: 'unknown', text: srcParts[0] };
+          break;
       }
+      // for (let j = 0; j < srcParts.length - 1; j++) {
+      //   // TODO: parse at least the headline here
+      //   item.push(srcParts[j].trim());
+      // }
+
       r.entries.push(item);
     }
     return r;
+  }
+
+  static parseStateEntry(lines) {
+    let ret;
+    let headlineParts = lines[0].split(' ');
+    switch (headlineParts.length) {
+      case 5:
+        // normal case: State "something" from "something else" [timestamp]
+        ret = {
+          type: 'state',
+          state: headlineParts[1],
+          from: headlineParts[3],
+          timestamp: headlineParts[4],
+          text: 'foo'
+        };
+        break;
+      case 4:
+        // assuming missing from state: State "something" from   [timestamp]
+        ret = {
+          type: 'state',
+          state: headlineParts[1],
+          from: 'undefined',
+          timestamp: headlineParts[3],
+          text: 'foo'
+        };
+        break;
+      default:
+        // dunno what to do in this case
+        ret = {
+          type: 'state',
+          state: 'undefined',
+          from: 'undefined',
+          timestamp: 'undefined',
+          text: 'foo'
+        };
+        break;
+    }
+    if (lines.length < 1) {
+      lines.shift();
+      ret.text = lines.join('\n');
+    }
+    return ret;
+  }
+
+  static parseNoteEntry(lines) {
+    let headlineParts = lines[0].split(' ');
+    let ret = {
+      type: 'note',
+      timestamp: headlineParts[3]
+    };
+    if (lines.length < 1) {
+      lines.shift();
+      ret.text = lines.join('\n');
+    }
+    return ret;
   }
 
   static serialize(logbook, level = 1) {
