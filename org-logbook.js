@@ -42,25 +42,31 @@ class OrgLogbook {
 
   static parseStateEntry(lines) {
     let ret;
-    let headlineParts = lines[0].split(' ');
+    let headline = lines[0];
+    const tssIdx = headline.indexOf('[');
+    const tseIdx = headline.indexOf(']');
+    const ts = headline.substr(tssIdx, tseIdx - tssIdx + 1);
+    headline = headline.substr(0, tssIdx).trim();
+    let headlineParts = headline.split(/\s+(?=[A-Za-z"])/);
+
     switch (headlineParts.length) {
-      case 5:
+      case 4:
         // normal case: State "something" from "something else" [timestamp]
         ret = {
           type: 'state',
           state: headlineParts[1],
           from: headlineParts[3],
-          timestamp: headlineParts[4],
+          timestamp: ts,
           text: 'foo'
         };
         break;
-      case 4:
+      case 3:
         // assuming missing from state: State "something" from   [timestamp]
         ret = {
           type: 'state',
           state: headlineParts[1],
           from: 'undefined',
-          timestamp: headlineParts[3],
+          timestamp: ts,
           text: 'foo'
         };
         break;
@@ -83,11 +89,20 @@ class OrgLogbook {
   }
 
   static parseNoteEntry(lines) {
-    let headlineParts = lines[0].split(' ');
-    let ret = {
+    // D.R.Y !!!!!!
+    let ret;
+    let headline = lines[0];
+    const tssIdx = headline.indexOf('[');
+    const tseIdx = headline.indexOf(']');
+    const ts = headline.substr(tssIdx, tseIdx - tssIdx + 1);
+    // headline = headline.substr(0, tssIdx).trim();
+    //let headlineParts = headline.split(/\s+(?=[A-Za-z"])/);
+
+    ret = {
       type: 'note',
-      timestamp: headlineParts[3]
+      timestamp: ts
     };
+
     if (lines.length < 1) {
       lines.shift();
       ret.text = lines.join('\n');
