@@ -95,19 +95,15 @@ class OrgLogbook {
     const tssIdx = headline.indexOf('[');
     const tseIdx = headline.indexOf(']');
     const ts = headline.substr(tssIdx, tseIdx - tssIdx + 1);
-    // headline = headline.substr(0, tssIdx).trim();
-    //let headlineParts = headline.split(/\s+(?=[A-Za-z"])/);
 
     ret = {
       type: 'note',
       timestamp: ts
     };
 
-    console.log(lines.length);
     if (lines.length > 1) {
       lines.shift();
       ret.text = lines.join('\n');
-      console.log(lines.join('\n'));
     }
 
     return ret;
