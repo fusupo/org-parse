@@ -12,7 +12,6 @@ test('is method', () => {
 test('does something', () => {
   parseOrg(testOrgStr).then(res => {
     expect(res).toBeInstanceOf(Object);
-    expect(res).toBeInstanceOf(Object);
     expect(res.nodes).toBeInstanceOf(Object);
     expect(res.tree).toBeInstanceOf(Object);
   });

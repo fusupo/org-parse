@@ -27,9 +27,30 @@ class OrgDrawer {
   }
 
   static insert(drawer, keyval) {
-    drawer.properties.push(keyval);
-    return drawer;
+    let clone = drawer.properties.slice(0);
+    clone.push(keyval);
+    return Object.assign({}, drawer, { properties: clone });
   }
+
+  static update(drawer, keyval) {
+    const idx = OrgDrawer.indexOfKey(drawer, keyval[0]);
+    let clone = drawer.properties.slice(0);
+    clone[idx] = keyval;
+    return Object.assign({}, drawer, { properties: clone });
+  }
+
+  static insertOrUpdate(drawer, keyval) {
+    if (OrgDrawer.indexOfKey(drawer, keyval[0]) === -1) {
+      return OrgDrawer.insert(drawer, keyval);
+    } else {
+      return OrgDrawer.update(drawer, keyval);
+    }
+  }
+
+  // static insert(drawer, keyval) {
+  //   drawer.properties.push(keyval);
+  //   return drawer;
+  // }
 
   static clone(drawer) {
     let ret = OrgDrawer.new(drawer.name);
@@ -39,6 +60,20 @@ class OrgDrawer {
       ret.properties.push(targKeyval);
     }
     return ret;
+  }
+
+  static indexOfKey(drawer, key) {
+    let i = 0;
+    let found = false;
+    while (i < drawer.properties.length && found === false) {
+      if (drawer.properties[i][0] === key) {
+        found = true;
+      } else {
+        i++;
+      }
+    }
+    if (found === false) return -1;
+    return i;
   }
 
   static serialize(drawer, level = 1) {

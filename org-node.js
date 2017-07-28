@@ -10,6 +10,8 @@ const org_property_start_re = /^[ \t]*:PROPERTIES:[ \t]*/;
 const org_logbook_start_re = /^[ \t]*:LOGBOOK:[ \t]*$/;
 const org_property_end_re = /^[ \t]*:END:[ \t]*$/;
 
+var shortid = require('shortid');
+
 class OrgNode {
   static parse(srcStr) {
     let ret = {};
@@ -74,10 +76,34 @@ class OrgNode {
       }
       idx++;
     }
+
+    //  apply uniqyue id
+    idx = 0;
+    const props = ret.propDrawer.properties;
+    let idFound = false;
+    while (idx < props.length && idFound === false) {
+      if (props[idx][0] === 'MOTID') {
+        idFound = true;
+        ret.id = props[idx][1];
+      }
+      idx++;
+    }
+
+    const newId = shortid.generate();
+    ret.id = newId;
+    if (idFound === false)
+      ret.propDrawer = OrgDrawer.insert(ret.propDrawer, ['MOTID', newId]);
+    //
+
     return ret;
   }
 
+  static newNodeID() {
+    return shortid.generate();
+  }
+
   static serialize(node) {
+    // TODO: make sure to handle the node ID
     const level = node.headline.level || 1;
     let r = '';
     // HEADLINE

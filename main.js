@@ -1,5 +1,7 @@
+const OrgDrawer = require('./org-drawer');
 const OrgTree = require('./org-tree');
 const OrgNode = require('./org-node');
+const OrgTimestamp = require('./org-timestamp');
 const nodeHasActiveTimeStamp_p = require('./utils').nodeHasActiveTimeStamp_p;
 const activeTimeStampFromNode = require('./utils').activeTimeStampFromNode;
 
@@ -12,22 +14,23 @@ const createNodeMaybe = srcStr => {
   }
 };
 
-const parseTree = (parentTree, nodes) => {
+const parseTree = (parentTree, nodes, nodeIDs) => {
   let idx = 0;
   const innerFunc = pt => {
-    let currNode = nodes[idx];
-    let currTree = OrgTree.new(currNode);
+    const currID = nodeIDs[idx];
+    let currNode = nodes[currID];
+    let currTree = OrgTree.new(currID);
     idx++;
     pt.children.push(currTree);
     while (
-      idx < nodes.length &&
-      nodes[idx].headline.level === currNode.headline.level + 1
+      idx < nodeIDs.length &&
+      nodes[nodeIDs[idx]].headline.level === currNode.headline.level + 1
     ) {
       innerFunc(currTree);
     }
     if (
-      idx < nodes.length &&
-      currNode.headline.level === nodes[idx].headline.level
+      idx < nodeIDs.length &&
+      currNode.headline.level === nodes[nodeIDs[idx]].headline.level
     ) {
       innerFunc(pt);
     }
@@ -38,21 +41,22 @@ const parseTree = (parentTree, nodes) => {
 const parseOrg = srcStr =>
   new Promise((resolve, reject) => {
     let nodesSrc = srcStr.split(/\n(?=\*)/gm);
-    let nodes = [];
-    let tree = OrgTree.new(null);
+    let nodes = {};
+    let tree = OrgTree.new('root');
     for (let idx in nodesSrc) {
       let node = createNodeMaybe(nodesSrc[idx]);
       if (node) {
-        nodes.push(node);
+        nodes[node.id] = node;
       }
     }
-    parseTree(tree, nodes);
-    tree.header = nodesSrc[0]; //super hacky to save to document header!!!
+    parseTree(tree, nodes, Object.keys(nodes));
+    //tree.header = nodesSrc[0]; //super hacky to save to document header!!!
     resolve({ nodes, tree });
   });
 
-const serializeTree = tree => {
-  return OrgTree.serialize(tree);
+const serialize = (nodes, tree) => {
+  console.log('WTF?!?!?!');
+  return OrgTree.serialize(tree, nodes);
 };
 
 let utils = {
@@ -61,5 +65,10 @@ let utils = {
 };
 
 module.exports.parseOrg = parseOrg;
-module.exports.serializeTree = serializeTree;
+module.exports.serialize = serialize;
 module.exports.utils = utils;
+
+module.exports.OrgTimestamp = OrgTimestamp;
+module.exports.OrgDrawer = OrgDrawer;
+module.exports.OrgTree = OrgTree;
+module.exports.OrgNode = OrgNode;
