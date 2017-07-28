@@ -111,20 +111,20 @@ class OrgLogbook {
 
   static serialize(logbook, level = 1) {
     let r = '';
-    if (logbook.entries.length > 0) {
-      r += padStart(':LOGBOOK:', level + 1, ' ') + '\n';
-      for (let i in logbook.entries) {
-        for (let j in logbook.entries[i]) {
-          r +=
-            padStart(
-              `${+j === 0 ? '- ' : ' '}${logbook.entries[i][j]}`,
-              +j === 0 ? level + 1 : level + 2,
-              ' '
-            ) + '\n';
-        }
-      }
-      r += padStart(':END:', level + 1, ' ') + '\n';
-    }
+    // if (logbook.entries.length > 0) {
+    //   r += padStart(':LOGBOOK:', level + 1, ' ') + '\n';
+    //   for (let i in logbook.entries) {
+    //     for (let j in logbook.entries[i]) {
+    //       r +=
+    //         padStart(
+    //           `${+j === 0 ? '- ' : ' '}${logbook.entries[i][j]}`,
+    //           +j === 0 ? level + 1 : level + 2,
+    //           ' '
+    //         ) + '\n';
+    //     }
+    //   }
+    //   r += padStart(':END:', level + 1, ' ') + '\n';
+    // }
     return r;
   }
 }
