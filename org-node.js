@@ -43,6 +43,7 @@ class OrgNode {
             ret.deadline = OrgTimestamp.parse(deadlineStr);
           } else {
             ret.scheduled = OrgTimestamp.parse(srcLine);
+            ret.deadline = null;
           }
         } else if (srcLine.startsWith('DEADLINE:')) {
           idx = srcLine.indexOf('SCHEDULED:');
@@ -53,6 +54,7 @@ class OrgNode {
             ret.scheduled = OrgTimestamp.parse(scheduledStr);
           } else {
             ret.deadline = OrgTimestamp.parse(srcLine);
+            ret.scheduled = null;
           }
         }
       } else if (srcLine.match(org_closed_start_re)) {

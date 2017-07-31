@@ -11,6 +11,7 @@ const org_repeat_re = /<[0-9]{4}-[0-9][0-9]-[0-9][0-9] [^>\n]*?([.+]?\+)([0-9]+[
 
 class OrgTimestamp {
   static parse(srcStr) {
+    // todo: parse timestamps without hour:minute parts without error
     const matchRes = srcStr.match(org_ts_re);
     let type;
     if (matchRes !== null) {
