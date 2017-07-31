@@ -4,7 +4,7 @@ const OrgDrawer = require('./org-drawer');
 const OrgHeadLine = require('./org-headline');
 const padStart = require('./utils').padStart;
 
-const org_scheduled_start_re = /^[ \t]*SCHEDULED:[ \t]*/;
+const org_scheduled_or_deadline_start_re = /^[ /t]*SCHEDULED:[ /t]*|^[ /t]*DEADLINE:[ /t]*/gm; ///^[ \t]*SCHEDULED:[ \t]*/;
 const org_closed_start_re = /^[ \t]*CLOSED:[ \t]*$/;
 const org_property_start_re = /^[ \t]*:PROPERTIES:[ \t]*/;
 const org_logbook_start_re = /^[ \t]*:LOGBOOK:[ \t]*$/;
@@ -29,9 +29,32 @@ class OrgNode {
     let idx = 1;
     while (idx < srcLines.length) {
       const srcLine = srcLines[idx].trim();
-      if (srcLine.match(org_scheduled_start_re)) {
+      if (srcLine.match(org_scheduled_or_deadline_start_re)) {
         // SCHEDULED:
-        ret.scheduled = OrgTimestamp.parse(srcLine);
+        let idx;
+        let scheduledStr;
+        let deadlineStr;
+        if (srcLine.startsWith('SCHEDULED:')) {
+          idx = srcLine.indexOf('DEADLINE:');
+          if (idx > 0) {
+            scheduledStr = srcLine.substring(0, idx);
+            deadlineStr = srcLine.substring(idx);
+            ret.scheduled = OrgTimestamp.parse(scheduledStr);
+            ret.deadline = OrgTimestamp.parse(deadlineStr);
+          } else {
+            ret.scheduled = OrgTimestamp.parse(srcLine);
+          }
+        } else if (srcLine.startsWith('DEADLINE:')) {
+          idx = srcLine.indexOf('SCHEDULED:');
+          if (idx > 0) {
+            deadlineStr = srcLine.substring(0, idx);
+            scheduledStr = srcLine.substring(idx);
+            ret.deadline = OrgTimestamp.parse(deadlineStr);
+            ret.scheduled = OrgTimestamp.parse(scheduledStr);
+          } else {
+            ret.deadline = OrgTimestamp.parse(srcLine);
+          }
+        }
       } else if (srcLine.match(org_closed_start_re)) {
         // CLOSED:
         ret.closed = OrgTimestamp.parse(srcLine);
