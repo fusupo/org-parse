@@ -10,7 +10,15 @@ const org_repeat_re = /<[0-9]{4}-[0-9][0-9]-[0-9][0-9] [^>\n]*?([.+]?\+)([0-9]+[
 //<2017-01-08 Sun 12:30>
 
 class OrgTimestamp {
-  static parse(srcStr) {
+  static parse(src) {
+    if (src instanceof Date) {
+      return OrgTimestamp.parseDate(src);
+    } else if (typeof src === 'string') {
+      return OrgTimestamp.parseStr(src);
+    }
+  }
+
+  static parseStr(srcStr) {
     // todo: parse timestamps without hour:minute parts without error
     const matchRes = srcStr.match(org_ts_re);
     let type;
@@ -38,21 +46,25 @@ class OrgTimestamp {
     };
   }
 
-  static now() {
-    const now = moment();
+  static parseDate(srcDate) {
+    const mom = srcDate === undefined ? moment() : moment(srcDate);
     return {
       // srcStr: '',
       type: 'inactive',
-      year: now.year(),
-      month: now.month() + 1,
-      date: now.date(),
-      day: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][now.day()],
-      hour: now.hour(),
-      minute: now.minute(),
+      year: mom.year(),
+      month: mom.month() + 1,
+      date: mom.date(),
+      day: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][mom.day()],
+      hour: mom.hour(),
+      minute: mom.minute(),
       repInt: null,
       repMin: null,
       repMax: null
     };
+  }
+
+  static now() {
+    return OrgTimestamp.parseDate();
   }
 
   static momentFromObj(obj) {
