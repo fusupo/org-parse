@@ -84,6 +84,19 @@ class OrgHeadLine {
     return ret;
   }
 
+  static colorForKeyword(keyword) {
+    const idx = keywords.indexOf(keyword);
+    if (idx > 0) {
+      return colors[idx];
+    } else {
+      return '#ffffff';
+    }
+  }
+
+  static keywords() {
+    return keywords;
+  }
+
   static serialize(headline) {
     const level = headline.level;
     // TODO KEWYWORD
