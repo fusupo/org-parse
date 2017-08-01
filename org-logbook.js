@@ -103,6 +103,8 @@ class OrgLogbook {
 
     if (lines.length > 1) {
       lines.shift();
+      lines = lines.map(l => l.trim());
+      console.log(lines);
       ret.text = lines.join('\n');
     }
 
