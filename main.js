@@ -1,6 +1,7 @@
 const OrgDrawer = require('./org-drawer');
 const OrgTree = require('./org-tree');
 const OrgNode = require('./org-node');
+const OrgHeadline = require('./org-headline');
 const OrgTimestamp = require('./org-timestamp');
 const nodeHasActiveTimeStamp_p = require('./utils').nodeHasActiveTimeStamp_p;
 const activeTimeStampFromNode = require('./utils').activeTimeStampFromNode;
@@ -72,3 +73,4 @@ module.exports.OrgTimestamp = OrgTimestamp;
 module.exports.OrgDrawer = OrgDrawer;
 module.exports.OrgTree = OrgTree;
 module.exports.OrgNode = OrgNode;
+module.exports.OrgHeadline = OrgHeadline;
