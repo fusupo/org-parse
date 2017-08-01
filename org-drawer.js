@@ -32,6 +32,13 @@ class OrgDrawer {
     return Object.assign({}, drawer, { properties: clone });
   }
 
+  static remove(drawer, keyval) {
+    const idx = OrgDrawer.indexOfKey(drawer, keyval[0]);
+    let clone = drawer.properties.slice(0);
+    clone.splice(idx, 1);
+    return Object.assign({}, drawer, { properties: clone });
+  }
+
   static update(drawer, keyval) {
     const idx = OrgDrawer.indexOfKey(drawer, keyval[0]);
     let clone = drawer.properties.slice(0);
