@@ -40,6 +40,19 @@ class OrgLogbook {
     return r;
   }
 
+  static parseEntryText(lines) {
+    const lns = lines.slice(0);
+    let text = '';
+    if (lines[lines.length - 1] === '') lines.pop();
+    if (lines.length > 1) {
+      lines.shift();
+      lines = lines.map(l => l.trim());
+      text = lines.join('\n');
+      //console.log(ret);
+    }
+    return text;
+  }
+
   static parseStateEntry(lines) {
     let ret;
     let headline = lines[0];
@@ -57,7 +70,7 @@ class OrgLogbook {
           state: headlineParts[1],
           from: headlineParts[3],
           timestamp: ts,
-          text: 'foo'
+          text: ''
         };
         break;
       case 3:
@@ -67,7 +80,7 @@ class OrgLogbook {
           state: headlineParts[1],
           from: 'undefined',
           timestamp: ts,
-          text: 'foo'
+          text: ''
         };
         break;
       default:
@@ -77,14 +90,13 @@ class OrgLogbook {
           state: 'undefined',
           from: 'undefined',
           timestamp: 'undefined',
-          text: 'foo'
+          text: ''
         };
         break;
     }
-    if (lines.length > 1) {
-      lines.shift();
-      ret.text = lines.join('\n');
-    }
+
+    ret.text = OrgLogbook.parseEntryText(lines);
+
     return ret;
   }
 
@@ -101,38 +113,54 @@ class OrgLogbook {
       timestamp: ts
     };
 
-    if (lines.length > 1) {
-      lines.shift();
-      lines = lines.map(l => l.trim());
-      console.log(lines);
-      ret.text = lines.join('\n');
-    }
+    ret.text = OrgLogbook.parseEntryText(lines);
 
     return ret;
   }
 
   static serialize(logbook, level = 1) {
     let r = '';
+
+    const serializeText = e => {
+      let ret = '';
+      if (e.text !== undefined && e.text !== '') {
+        let lines = e.text.split('\n');
+        lines = lines.map(l => padStart(l, level + 3));
+        lines = lines.join('\n');
+        ret += ` \\\\\n${lines}`;
+      }
+      ret += '\n';
+      return ret;
+    };
+
     if (logbook.entries.length > 0) {
-      r += padStart(':LOGBOOK:', level + 1, ' ') + '\n';
+      console.log(level);
+      r += padStart(':LOGBOOK:', level + 1) + '\n';
       for (let i in logbook.entries) {
         const entry = logbook.entries[i];
         if (entry.type === 'state') {
-          r += padStart(
-            `- State ${entry.state}       from ${entry.from}       ${entry.timestamp}`,
-            level + 1,
-            ' '
-          );
-          if (entry.text !== undefined) r += ` \\\\\n${entry.text}`;
+          let prt1 = `- State ${entry.state}`;
+          let prt2 = `from ${entry.from}`;
+          let i;
+          for (i = 0; i < 13 - entry.state.length; i++) {
+            prt1 += ' ';
+          }
+          for (i = 0; i < 13 - entry.from.length; i++) {
+            prt2 += ' ';
+          }
+          r += padStart(`${prt1}${prt2}${entry.timestamp}`, level + 1, ' ');
+          r += serializeText(entry);
         } else if (entry.type === 'note') {
-          r += padStart(`- Note taken on ${entry.timestamp}`, level + 1, ' ');
-          if (entry.text !== undefined) r += ` \\\\\n${entry.text}`;
+          r += padStart(`- Note taken on ${entry.timestamp}`, level + 1);
+          r += serializeText(entry);
         } else {
           //handle error
         }
       }
-      r += padStart(':END:', level + 1, ' ') + '\n';
+      r += padStart(':END:', level + 1) + '\n';
     }
+
+    console.log(r);
     return r;
   }
 }
