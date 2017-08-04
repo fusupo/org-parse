@@ -97,6 +97,7 @@ class OrgNode {
           ret.body.push(line);
           endIdxX++;
         }
+        ret.body = ret.body.join('\n');
         idx = endIdxX;
       }
       idx++;
@@ -156,10 +157,14 @@ class OrgNode {
     // :LOGBOOK:
     r += node.logbook ? OrgLogbook.serialize(node.logbook, level) : '';
     // Body
-    for (let i in node.body) {
-      r += padStart(node.body[i], level + 1, ' ');
-      if (i < node.body.length) r += '\n';
+    if (node.body !== null) {
+      r += padStart(node.body, level + 1, ' ');
+      r += '\n';
     }
+    // for (let i in node.body) {
+    //   r += padStart(node.body[i], level + 1, ' ');
+    //   if (i < node.body.length) r += '\n';
+    // }
     return r;
   }
 }
