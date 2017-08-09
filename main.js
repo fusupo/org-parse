@@ -42,8 +42,13 @@ const parseTree = (parentTree, nodes, nodeIDs) => {
 const parseOrg = srcStr =>
   new Promise((resolve, reject) => {
     let nodesSrc = srcStr.split(/\n(?=\*)/gm);
+    let settings = [];
     let nodes = {};
     let tree = OrgTree.new('root');
+    while (nodesSrc[0].startsWith('#+')) {
+      settings.push(nodesSrc[0]);
+      nodesSrc.shift();
+    }
     for (let idx in nodesSrc) {
       let node = createNodeMaybe(nodesSrc[idx]);
       if (node) {
@@ -52,11 +57,10 @@ const parseOrg = srcStr =>
     }
     parseTree(tree, nodes, Object.keys(nodes));
     //tree.header = nodesSrc[0]; //super hacky to save to document header!!!
-    resolve({ nodes, tree });
+    resolve({ nodes, tree, settings });
   });
 
 const serialize = (nodes, tree) => {
-  console.log('WTF?!?!?!');
   return OrgTree.serialize(tree, nodes);
 };
 
