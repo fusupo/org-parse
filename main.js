@@ -60,8 +60,15 @@ const parseOrg = srcStr =>
     resolve({ nodes, tree, settings });
   });
 
-const serialize = (nodes, tree) => {
-  return OrgTree.serialize(tree, nodes);
+const serialize = (nodes, tree, settings) => {
+  let ret = '';
+  if (settings !== null && settings.length > 0) {
+    ret += settings.join('\n');
+    ret += '\n';
+  }
+  ret += OrgTree.serialize(tree, nodes);
+  console.log(ret);
+  return ret;
 };
 
 let utils = {

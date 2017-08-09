@@ -85,7 +85,7 @@ class OrgDrawer {
 
   static serialize(drawer, level = 1) {
     let r = '';
-    //    const props = drawer.properties.filter(p => p[0] !== 'MOTID');
+    const props = drawer.properties.filter(p => p[0] !== 'MOTID');
     if (props.length > 0) {
       r += padStart(':PROPERTIES:', level + 1) + '\n';
       for (let i in props) {
