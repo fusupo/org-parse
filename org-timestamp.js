@@ -115,6 +115,12 @@ class OrgTimestamp {
     return ret;
   }
 
+  static diff(a, b, u = 'milliseconds') {
+    const momA = OrgTimestamp.momentFromObj(a);
+    const momB = OrgTimestamp.momentFromObj(b);
+    return momA.diff(momB, u);
+  }
+
   static compare(a, b) {
     a = typeof a === 'string' ? OrgTimestamp.parse(a) : a;
     b = typeof b === 'string' ? OrgTimestamp.parse(b) : b;
