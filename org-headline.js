@@ -98,21 +98,22 @@ class OrgHeadLine {
   }
 
   static serialize(headline) {
-    const level = headline.level;
+    const { level, todoKeyword, content, tags } = headline;
+
     // TODO KEWYWORD
-    let r = headline.todoKeyword ? ` ${headline.todoKeyword} ` : ' ';
+    let r = todoKeyword ? ` ${todoKeyword} ` : ' ';
     // CONTENT
-    r += headline.content;
+    r += content;
     r = padStart(r, level, '*');
     // TAGS
-    let tags = headline.tags
-      ? headline.tags.reduce((m, t) => {
+    let tagsStr = tags && tags.length > 0
+      ? tags.reduce((m, t) => {
           return m + t + ':';
         }, ':')
       : '';
-    if (tags.length > 0) {
-      const tagPad = Math.max(80 - tags.length - r.length, 1);
-      r += padStart(tags, tagPad, ' ');
+    if (tagsStr.length > 0) {
+      const tagPad = Math.max(80 - tagsStr.length - r.length, 1);
+      r += padStart(tagsStr, tagPad, ' ');
     }
     r += '\n';
     return r;
