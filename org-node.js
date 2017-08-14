@@ -98,6 +98,8 @@ class OrgNode {
           endIdxX++;
         }
         ret.body = ret.body.join('\n');
+        if (ret.body[ret.body.length - 1] === '\n')
+          ret.body = ret.body.substr(0, ret.body.length - 1);
         idx = endIdxX;
       }
       idx++;
@@ -157,7 +159,7 @@ class OrgNode {
     // :LOGBOOK:
     r += node.logbook ? OrgLogbook.serialize(node.logbook, level) : '';
     // Body
-    if (node.body !== null) {
+    if (node.body !== null && node.body != '') {
       r += padStart(node.body, level + 1, ' ');
       r += '\n';
     }
