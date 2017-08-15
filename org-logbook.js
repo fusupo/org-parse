@@ -134,7 +134,6 @@ class OrgLogbook {
     };
 
     if (logbook.entries.length > 0) {
-      console.log(level);
       r += padStart(':LOGBOOK:', level + 1) + '\n';
       for (let i in logbook.entries) {
         const entry = logbook.entries[i];
@@ -160,7 +159,6 @@ class OrgLogbook {
       r += padStart(':END:', level + 1) + '\n';
     }
 
-    console.log(r);
     return r;
   }
 }

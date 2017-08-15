@@ -67,7 +67,6 @@ const serialize = (nodes, tree, settings) => {
     ret += '\n';
   }
   ret += OrgTree.serialize(tree, nodes);
-  console.log(ret);
   return ret;
 };
 
