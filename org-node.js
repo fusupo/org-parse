@@ -57,8 +57,7 @@ class OrgNode {
             ret.scheduled = null;
           }
         }
-      } else if (srcLine.match(org_closed_start_re)) {
-        // CLOSED:
+      } else if (srcLine.startsWith('CLOSED:')) {
         ret.closed = OrgTimestamp.parse(srcLine);
       } else if (srcLine.match(org_property_start_re)) {
         // :PROPERTIES:
@@ -90,10 +89,15 @@ class OrgNode {
         //   ret.opened = new OrgTimestamp(srcLine.slice(7).trim());
         // }
         let endIdxX = idx;
-        let line = srcLines[endIdxX].trim();
+        let line;
         ret.body = [];
         while (endIdxX < srcLines.length) {
-          line = srcLines[endIdxX].trim();
+          line = srcLines[endIdxX]; //.trim();
+          console.log(`${ret.headline.level} -- |${line}|`);
+          for (let i = 0; i < ret.headline.level + 1; i++) {
+            line = line[0] === ' ' ? line.substr(1) : line;
+          }
+          console.log(`${ret.headline.level} -- |${line}|`);
           ret.body.push(line);
           endIdxX++;
         }
@@ -160,7 +164,10 @@ class OrgNode {
     r += node.logbook ? OrgLogbook.serialize(node.logbook, level) : '';
     // Body
     if (node.body !== null && node.body != '') {
-      r += padStart(node.body, level + 1, ' ');
+      let lines = node.body.split('\n');
+      lines = lines.map(l => padStart(l, level + 1, ' '));
+      r += lines.join('\n');
+      // r += padStart(node.body, level + 1, ' ');
       r += '\n';
     }
     // for (let i in node.body) {
