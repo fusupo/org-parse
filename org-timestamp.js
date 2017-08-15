@@ -93,6 +93,10 @@ class OrgTimestamp {
     };
   }
 
+  static clone(obj) {
+    return OrgTimestamp.momentToObj(OrgTimestamp.momentFromObj(obj));
+  }
+
   static add(a, b) {
     const mom = OrgTimestamp.momentFromObj(a);
     const res = mom.add(b);
