@@ -20,7 +20,7 @@ class OrgNode {
     ret.headline = OrgHeadLine.parse(srcLines[0]);
     ret.scheduled = null;
     ret.closed = null;
-    // ret.deadline = null;
+    ret.deadline = null;
     ret.propDrawer = OrgDrawer.new('PROPERTIES');
     ret.logbook = null;
     ret.opened = null;
@@ -93,11 +93,9 @@ class OrgNode {
         ret.body = [];
         while (endIdxX < srcLines.length) {
           line = srcLines[endIdxX]; //.trim();
-          console.log(`${ret.headline.level} -- |${line}|`);
           for (let i = 0; i < ret.headline.level + 1; i++) {
             line = line[0] === ' ' ? line.substr(1) : line;
           }
-          console.log(`${ret.headline.level} -- |${line}|`);
           ret.body.push(line);
           endIdxX++;
         }
@@ -167,13 +165,8 @@ class OrgNode {
       let lines = node.body.split('\n');
       lines = lines.map(l => padStart(l, level + 1, ' '));
       r += lines.join('\n');
-      // r += padStart(node.body, level + 1, ' ');
       r += '\n';
     }
-    // for (let i in node.body) {
-    //   r += padStart(node.body[i], level + 1, ' ');
-    //   if (i < node.body.length) r += '\n';
-    // }
     return r;
   }
 }
