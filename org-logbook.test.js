@@ -1,14 +1,16 @@
 const OrgLogbook = require('./org-logbook');
 const testLogItemA = `   - State "DONE"       from "TODO"       [2017-06-02 Fri 08:58] \\
      [2017-06-02 Fri 08:30]`;
-// let logbook = OrgLogbook.new('test');
+const testLog = `      :LOGBOOK:
+      CLOCK: [2017-08-18 Fri 15:05]
+      :END:`;
 
-// test('has property "log"', () => {
-//   expect(logbook.log).toBeDefined();
-//   expect(logbook.log).toBeInstanceOf(Array);
-//   expect(logbook.log.length).toBe(0);
-// });
+test('has property "prse"', () => {
+  expect(OrgLogbook.parse).toBeDefined();
+  expect(OrgLogbook.parse).toBeInstanceOf(Function);
+});
 
+OrgLogbook.parse(testLog);
 // test('has method "push"', () => {
 //   expect(OrgLogbook.insert).toBeDefined();
 //   expect(OrgLogbook.insert).toBeInstanceOf(Function);

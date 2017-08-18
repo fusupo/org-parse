@@ -1,40 +1,46 @@
 const padStart = require('./utils').padStart;
 
-class OrgLogbook {
-  // static new(name) {
-  //   let ret = {
-  //     name: name || 'logbook',
-  //     log: []
-  //   };
-  //   return ret;
-  // }
+const logbookEntriesRx = /^(?:[\t ]*)(?:- )*((?:State)|(?:CLOCK:)|(?:Note)) ([\\ \-\:\[\]\=\>\"0-9a-zA-Z]*)/i;
 
+class OrgLogbook {
   static parse(srcStr) {
     let r = {};
     r.entries = [];
-    let srcItems = srcStr.split(/^(?:[\t ]* ) - /gm);
-    srcItems.shift(); //using regex above first item is always empty string
-    for (let i in srcItems) {
-      let srcParts = srcItems[i].split('\n');
-      let item;
-      // likewise here the last item is always empty string
-      let headlineParts = srcParts[0].split(' ');
-      switch (headlineParts[0]) {
+    let srcItems = srcStr.split('\n');
+    const gatherNotes = () => {
+      const notes = [];
+      if (srcItems.length > 0) {
+        let reRes = logbookEntriesRx.exec(srcItems[0]);
+        let type = reRes ? reRes[1] : null;
+        while (type === null && srcItems.length > 0) {
+          notes.push(srcItems.shift());
+          reRes = logbookEntriesRx.exec(srcItems[0]);
+          type = reRes ? reRes[1] : null;
+        }
+      }
+      return notes;
+    };
+
+    while (srcItems.length > 0) {
+      let item = null;
+      let reResults = logbookEntriesRx.exec(srcItems.shift());
+      let thisType = reResults ? reResults[1] : null;
+      let thisBody = thisType ? reResults[2] : null;
+      let nextType, srcParts = [thisBody];
+      switch (thisType) {
         case 'State':
-          item = OrgLogbook.parseStateEntry(srcParts);
+          item = OrgLogbook.parseStateEntry([thisBody].concat(gatherNotes()));
+          break;
+        case 'CLOCK:':
+          item = OrgLogbook.parseClockEntry([thisBody].concat(gatherNotes()));
           break;
         case 'Note':
-          item = OrgLogbook.parseNoteEntry(srcParts);
+          item = OrgLogbook.parseNoteEntry([thisBody].concat(gatherNotes()));
           break;
         default:
-          item = { type: 'unknown', text: srcParts[0] };
+          console.error('unhandled logbook entry type: ' + item);
           break;
       }
-      // for (let j = 0; j < srcParts.length - 1; j++) {
-      //   // TODO: parse at least the headline here
-      //   item.push(srcParts[j].trim());
-      // }
-
       r.entries.push(item);
     }
     return r;
@@ -48,7 +54,6 @@ class OrgLogbook {
       lines.shift();
       lines = lines.map(l => l.trim());
       text = lines.join('\n');
-      //console.log(ret);
     }
     return text;
   }
@@ -61,23 +66,22 @@ class OrgLogbook {
     const ts = headline.substr(tssIdx, tseIdx - tssIdx + 1);
     headline = headline.substr(0, tssIdx).trim();
     let headlineParts = headline.split(/\s+(?=[A-Za-z"])/);
-
     switch (headlineParts.length) {
-      case 4:
+      case 3:
         // normal case: State "something" from "something else" [timestamp]
         ret = {
           type: 'state',
-          state: headlineParts[1],
-          from: headlineParts[3],
+          state: headlineParts[0],
+          from: headlineParts[2],
           timestamp: ts,
           text: ''
         };
         break;
-      case 3:
+      case 2:
         // assuming missing from state: State "something" from   [timestamp]
         ret = {
           type: 'state',
-          state: headlineParts[1],
+          state: headlineParts[0],
           from: 'undefined',
           timestamp: ts,
           text: ''
@@ -115,6 +119,21 @@ class OrgLogbook {
 
     ret.text = OrgLogbook.parseEntryText(lines);
 
+    return ret;
+  }
+
+  static parseClockEntry(lines) {
+    const re = /^(\[[0-9]{4}-[0-9]{2}-[0-9]{2} [a-zA-Z]{3} [0-9]{2}:[0-9]{2}\])(?:--(\[[0-9]{4}-[0-9]{2}-[0-9]{2} [a-zA-Z]{3} [0-9]{2}:[0-9]{2}\]) =>  ([0-9:]*))*/m;
+    let ret;
+
+    let headline = lines[0];
+    let reRes = re.exec(headline);
+    ret = {
+      type: 'clock',
+      start: reRes[1],
+      end: reRes[2],
+      duration: reRes[3]
+    };
     return ret;
   }
 
