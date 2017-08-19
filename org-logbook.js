@@ -171,13 +171,18 @@ class OrgLogbook {
         } else if (entry.type === 'note') {
           r += padStart(`- Note taken on ${entry.timestamp}`, level + 1);
           r += serializeText(entry);
-        } else {
-          //handle error
+        } else if (entry.type === 'clock') {
+          r += padStart(`CLOCK: ${entry.start}`);
+          if (entry.end !== undefined) {
+            r += `--${entry.end} =>  ${entry.duration}`;
+          }
+          r += '\n';
         }
       }
       r += padStart(':END:', level + 1) + '\n';
     }
 
+    console.log(r);
     return r;
   }
 }

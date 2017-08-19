@@ -1,5 +1,6 @@
 const orgParse = require('./main');
 const parseOrg = orgParse.parseOrg;
+const serializeOrg = orgParse.serialize;
 const OrgTree = require('./org-tree');
 const fs = require('fs');
 
@@ -14,5 +15,6 @@ test('does something', () => {
     expect(res).toBeInstanceOf(Object);
     expect(res.nodes).toBeInstanceOf(Object);
     expect(res.tree).toBeInstanceOf(Object);
+    serializeOrg(res.nodes, res.tree, res.settings);
   });
 });
