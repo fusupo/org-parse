@@ -76,7 +76,7 @@ class OrgHeadLine {
       match = re.exec(rawHeadline);
     }
     if (ret.tags && ret.tags.length > 0) {
-      rawHeadline = rawHeadline.slice(0, rawHeadline.indexOf(ret.tags[0]) - 1);
+      rawHeadline = rawHeadline.slice(0, rawHeadline.indexOf(':'));
     } else {
       ret.tags = null;
     } // this is a little hacky
@@ -106,11 +106,12 @@ class OrgHeadLine {
     r += content;
     r = padStart(r, level, '*');
     // TAGS
-    let tagsStr = tags && tags.length > 0
-      ? tags.reduce((m, t) => {
-          return m + t + ':';
-        }, ':')
-      : '';
+    let tagsStr =
+      tags && tags.length > 0
+        ? tags.reduce((m, t) => {
+            return m + t + ':';
+          }, ':')
+        : '';
     if (tagsStr.length > 0) {
       const tagPad = Math.max(80 - tagsStr.length - r.length, 1);
       r += padStart(tagsStr, tagPad, ' ');
