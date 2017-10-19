@@ -18,9 +18,6 @@ test('has todoKeyword', () => {
   expect(headline.todoKeyword).toBe('TODO');
 });
 
-// test('has todoKeywordColor', () => {
-// });
-
 test('has content', () => {
   expect(headline.content).toBeDefined();
   expect(headline.content).toBe('Practice Typing 15mins');
@@ -31,4 +28,16 @@ test('has tags', () => {
   expect(headline.tags).toBeInstanceOf(Array);
   expect(headline.tags[0]).toBe('@computer');
   expect(headline.tags[1]).toBe('some_other_tag');
+});
+
+test('parses urlHeadlineWithTags', () => {
+  const urlHeadlineWithTags =
+    '**** http://www.js-arac.com/index.html             :something:tags:somethingElse:http:';
+  const parsed = OrgHeadLine.parse(urlHeadlineWithTags);
+  expect(parsed).toEqual({
+    level: 4,
+    tags: ['something', 'tags', 'somethingElse', 'http'],
+    content: 'http://www.js-arac.com/index.html',
+    todoKeyword: null
+  });
 });

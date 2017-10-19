@@ -66,7 +66,7 @@ class OrgHeadLine {
 
     // parse tags
     ret.tags = [];
-    let re = /(?:\:)([^\:\n ]*)/g;
+    let re = /(?:\:)([^\:\n ]*)(?=\:)/g;
     let match = re.exec(rawHeadline);
     if (match !== null) ret.tags = [];
     while (match !== null) {
