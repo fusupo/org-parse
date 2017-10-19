@@ -26,7 +26,8 @@ class OrgLogbook {
       let reResults = logbookEntriesRx.exec(srcItems.shift());
       let thisType = reResults ? reResults[1] : null;
       let thisBody = thisType ? reResults[2] : null;
-      let nextType, srcParts = [thisBody];
+      let nextType,
+        srcParts = [thisBody];
       switch (thisType) {
         case 'State':
           item = OrgLogbook.parseStateEntry([thisBody].concat(gatherNotes()));
@@ -182,7 +183,7 @@ class OrgLogbook {
       r += padStart(':END:', level + 1) + '\n';
     }
 
-    console.log(r);
+    //console.log(r);
     return r;
   }
 }
