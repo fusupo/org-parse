@@ -76,7 +76,10 @@ class OrgHeadLine {
       match = re.exec(rawHeadline);
     }
     if (ret.tags && ret.tags.length > 0) {
-      rawHeadline = rawHeadline.slice(0, rawHeadline.indexOf(':'));
+      rawHeadline = rawHeadline.slice(
+        0,
+        rawHeadline.indexOf(':' + ret.tags[0])
+      );
     } else {
       ret.tags = null;
     } // this is a little hacky
