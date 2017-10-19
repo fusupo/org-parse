@@ -138,6 +138,7 @@ class OrgNode {
     let r = '';
     // HEADLINE
     r += OrgHeadLine.serialize(node.headline);
+    r += '\n';
     // SCHEDULED:
     if (node.scheduled) {
       r += padStart(

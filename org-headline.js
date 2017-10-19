@@ -116,7 +116,6 @@ class OrgHeadLine {
       const tagPad = Math.max(80 - tagsStr.length - r.length, 1);
       r += padStart(tagsStr, tagPad, ' ');
     }
-    r += '\n';
     return r;
   }
 }
