@@ -35,7 +35,7 @@ class OrgHeadLine {
     ret.tags = null;
     ret.content = null;
     ret.todoKeyword = null;
-    ret.todoKeywordColor = null;
+    //ret.todoKeywordColor = null;
 
     let rawHeadline;
 
@@ -49,7 +49,7 @@ class OrgHeadLine {
       if (match !== null) {
         foundKeyword = true;
         ret.todoKeyword = keyword;
-        ret.todoKeywordColor = colors[idx];
+        //ret.todoKeywordColor = colors[idx];
         ret.level = match[1].length;
         rawHeadline = match[2];
       }
