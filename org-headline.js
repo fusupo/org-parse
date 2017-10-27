@@ -30,60 +30,76 @@ const colors = [
 
 class OrgHeadLine {
   static parse(srcStr) {
-    let ret = {};
-    ret.level = -1;
-    ret.tags = null;
-    ret.content = null;
-    ret.todoKeyword = null;
-    //ret.todoKeywordColor = null;
+    let ret = {
+      stars: -1,
+      todoKeyword: null,
+      priority: null,
+      comment: false,
+      title: null,
+      tags: null
+    };
 
     let rawHeadline;
+    let match;
+
+    // parse stars
+    match = /^\*+ /.exec(srcStr);
+    ret.stars = match[0].length - 1;
+    srcStr = srcStr.substr(ret.stars + 1); //.trim();
+
+    if (srcStr.length === 0) return ret;
 
     // parse todo keyword
     let idx = 0;
     let foundKeyword = false;
     do {
       let keyword = keywords[idx];
-      let re = new RegExp(`^(\\*+)(?: +${keyword})(?: +(.*?))?[ \\t]*$`, 'gm');
-      let match = re.exec(srcStr);
+      let re = new RegExp(`^${keyword}`, 'gm');
+      match = re.exec(srcStr);
       if (match !== null) {
         foundKeyword = true;
         ret.todoKeyword = keyword;
-        //ret.todoKeywordColor = colors[idx];
-        ret.level = match[1].length;
-        rawHeadline = match[2];
+        srcStr = srcStr.substr(ret.todoKeyword.length).trim();
       }
       idx++;
     } while (idx < keywords.length && foundKeyword === false);
 
-    // or parse normal
-    if (idx === keywords.length && foundKeyword === false) {
-      let re = /^(\*+)(?: +(.*?))?[ \t]*$/g;
-      let match = re.exec(srcStr);
-      ret.level = match[1].length;
-      rawHeadline = match[2];
+    if (srcStr.length === 0) return ret;
+
+    // parse priority cookie
+    match = /^\[\#([ABC])\]/.exec(srcStr);
+    if (match != null) {
+      ret.priority = match[1];
+      srcStr = srcStr.substr(match[0].length).trim();
     }
 
+    if (srcStr.length === 0) return ret;
+
     // parse tags
-    ret.tags = [];
     let re = /(?:\:)([^\:\n ]*)(?=\:)/g;
-    let match = re.exec(rawHeadline);
-    if (match !== null) ret.tags = [];
-    while (match !== null) {
-      if (match[1] !== '') {
-        ret.tags.push(match[1]);
+    let firstMatch = re.exec(srcStr);
+    if (firstMatch !== null) {
+      ret.tags = [];
+      match = firstMatch;
+      while (match !== null) {
+        if (match[1] !== '') {
+          ret.tags.push(match[1]);
+        }
+        match = re.exec(srcStr);
       }
-      match = re.exec(rawHeadline);
+      srcStr = srcStr.substr(0, firstMatch.index).trim();
     }
-    if (ret.tags && ret.tags.length > 0) {
-      rawHeadline = rawHeadline.slice(
-        0,
-        rawHeadline.indexOf(':' + ret.tags[0])
-      );
+
+    if (srcStr.length === 0) return ret;
+
+    // parse title
+    if (srcStr.indexOf('COMMENT ') === 0) {
+      ret.comment = true;
+      ret.title = srcStr.substr(8).trim();
     } else {
-      ret.tags = null;
-    } // this is a little hacky
-    ret.content = rawHeadline.trim();
+      ret.title = srcStr;
+    }
+
     return ret;
   }
 
@@ -101,13 +117,23 @@ class OrgHeadLine {
   }
 
   static serialize(headline) {
-    const { level, todoKeyword, content, tags } = headline;
+    const { stars, todoKeyword, priority, comment, title, tags } = headline;
 
-    // TODO KEWYWORD
-    let r = todoKeyword ? ` ${todoKeyword} ` : ' ';
-    // CONTENT
-    r += content;
-    r = padStart(r, level, '*');
+    // TODOKEWYWORD
+    let r = todoKeyword ? todoKeyword : '';
+    if (todoKeyword && (priority || title || tags)) r += ' ';
+
+    // PRIORITY
+    r += priority ? `[#${priority}]` : '';
+
+    // TITLE
+    if (comment) r += 'COMMENT ';
+    r += title ? title : '';
+    r = padStart(r, 1, ' ');
+
+    // STARS
+    r = padStart(r, stars, '*');
+
     // TAGS
     let tagsStr =
       tags && tags.length > 0
@@ -119,6 +145,7 @@ class OrgHeadLine {
       const tagPad = Math.max(80 - tagsStr.length - r.length, 1);
       r += padStart(tagsStr, tagPad, ' ');
     }
+
     return r;
   }
 }
