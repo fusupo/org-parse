@@ -1,10 +1,17 @@
-const padStart = (is, tl, ps = ' ') => {
-  let os = '';
-  for (let i = 0; i < tl; i++) {
-    os += ps;
+const padStart = (inStr, targLen, padStr = ' ') => {
+  // pads targLen padStrs
+  let outStr = '';
+  for (let i = 0; i < targLen; i++) {
+    outStr += padStr;
   }
-  os += is;
-  return os;
+  outStr += inStr;
+  return outStr;
+};
+
+const padStartMaybe = (inStr, targLen, padStr = ' ') => {
+  // pads padStr to make outStr length equal to targLen
+  const diffLen = targLen - inStr.length;
+  return diffLen > 0 ? padStart(inStr, diffLen, padStr) : inStr;
 };
 
 const nodeHasActiveTimeStamp_p = n => {
@@ -16,5 +23,6 @@ const activeTimeStampFromNode = n => {
 };
 
 module.exports.padStart = padStart;
+module.exports.padStartMaybe = padStartMaybe;
 module.exports.nodeHasActiveTimeStamp_p = nodeHasActiveTimeStamp_p;
 module.exports.activeTimeStampFromNode = activeTimeStampFromNode;
