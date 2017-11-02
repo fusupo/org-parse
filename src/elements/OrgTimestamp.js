@@ -69,14 +69,14 @@ class OrgTimestamp {
     } else if (timestampStr.search(coarse_active_ts_re) > -1) {
       const active_ts_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} [SunMonTueWedThuFri]{3})>/;
       const active_ts_with_time_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} [MonTueWedThuFriSatSun]{3}) ([0-9]+\:[0-9]{2})>/;
-      // const active_ts_with_time_and_repeat_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
-      // const active_ts_with_time_and_delay_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
-      // const active_ts_with_time_and_repeat_and_delay_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
+      // const active_ts_with_time_and_repeat_re =
+      // const active_ts_with_time_and_delay_re =
+      // const active_ts_with_time_and_repeat_and_delay_re =
 
       const active_range_b_ts_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} [MonTueWedThuFriSatSun]{3}) ([0-9]+\:[0-9]{2})-([0-9]+\:[0-9]{2})>/;
-      const active_range_b_ts_with_repeat_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
-      const active_range_b_ts_with_delay_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
-      const active_range_b_ts_with_repeat_delay_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
+      // const active_range_b_ts_with_repeat_re =
+      // const active_range_b_ts_with_delay_re =
+      // const active_range_b_ts_with_repeat_delay_re =
 
       let match;
 
@@ -106,14 +106,14 @@ class OrgTimestamp {
     } else if (timestampStr.search(coarse_inactive_ts_re) > -1) {
       const inactive_ts_re = /\[([0-9]{4}-[0-9]{2}-[0-9]{2} [SunMonTueWedThuFri]{3})\]/;
       const inactive_ts_with_time_re = /\[([0-9]{4}-[0-9]{2}-[0-9]{2} [MonTueWedThuFriSatSun]{3}) ([0-9]+\:[0-9]{2})\]/;
-      // const active_ts_with_time_and_repeat_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
-      // const active_ts_with_time_and_delay_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
-      // const active_ts_with_time_and_repeat_and_delay_re = /<([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)>/;
+      // const active_ts_with_time_and_repeat_re =
+      // const active_ts_with_time_and_delay_re =
+      // const active_ts_with_time_and_repeat_and_delay_re =
 
       const inactive_range_b_ts_re = /\[([0-9]{4}-[0-9]{2}-[0-9]{2} [MonTueWedThuFriSatSun]{3}) ([0-9]+\:[0-9]{2})-([0-9]+\:[0-9]{2})\]/;
-      const inactive_range_b_ts_with_repeat_re = /\[([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)\]/;
-      const inactive_range_b_ts_with_delay_re = /\[([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)\]/;
-      const inactive_range_b_ts_with_repeat_delay_re = /\[([0-9]{4}-[0-9]{2}-[0-9]{2} ?[^\r\n>]*?)\]/;
+      // const inactive_range_b_ts_with_repeat_re =
+      // const inactive_range_b_ts_with_delay_re =
+      // const inactive_range_b_ts_with_repeat_delay_re =
 
       let match;
 
@@ -147,7 +147,52 @@ class OrgTimestamp {
     return ret;
   }
 
-  static serialize(timestampObj) {}
+  static serialize(timestampObj) {
+    let ret = '';
+    switch (timestampObj.type) {
+      case OrgTimestamp.ACTIVE:
+        ret += '<';
+        ret += OrgDate.serialize(timestampObj.date);
+        ret += timestampObj.time
+          ? ' ' + OrgTime.serialize(timestampObj.time)
+          : '';
+        ret += '>';
+        break;
+      case OrgTimestamp.INACTIVE:
+        ret += '[';
+        ret += OrgDate.serialize(timestampObj.date);
+        ret += timestampObj.time
+          ? ' ' + OrgTime.serialize(timestampObj.time)
+          : '';
+        ret += ']';
+        break;
+      case OrgTimestamp.ACTIVE_RANGE_A:
+        break;
+      case OrgTimestamp.INACTIVE_RANGE_A:
+        break;
+      case OrgTimestamp.ACTIVE_RANGE_B:
+        ret += '<';
+        ret += OrgDate.serialize(timestampObj.date);
+        ret +=
+          ' ' +
+          OrgTime.serialize(timestampObj.timeStart) +
+          '-' +
+          OrgTime.serialize(timestampObj.timeEnd);
+        ret += '>';
+        break;
+      case OrgTimestamp.INACTIVE_RANGE_B:
+        ret += '[';
+        ret += OrgDate.serialize(timestampObj.date);
+        ret +=
+          ' ' +
+          OrgTime.serialize(timestampObj.timeStart) +
+          '-' +
+          OrgTime.serialize(timestampObj.timeEnd);
+        ret += ']';
+        break;
+    }
+    return ret;
+  }
 }
 
 module.exports = OrgTimestamp;
