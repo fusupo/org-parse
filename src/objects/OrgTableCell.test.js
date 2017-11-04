@@ -75,4 +75,13 @@ describe('serializes table cell', () => {
       })
     ).toBe(tableCellStr);
   });
+  test('serializes empty table cell', () => {
+    const tableCellStr = '             |';
+    expect(
+      OrgTableCell.serialize({
+        contents: '',
+        width: 13
+      })
+    ).toBe(tableCellStr);
+  });
 });
