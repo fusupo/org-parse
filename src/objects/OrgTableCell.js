@@ -4,11 +4,17 @@ class OrgTableCell {
   static parse(tableCellStr) {
     const ret = {
       contents: null,
-      width: null
+      width: tableCellStr.length - 1
     };
-    const contents = /\s*([^\|\n\r]+[^\s])\s*(?:\||\+)/.exec(tableCellStr);
-    ret.contents = contents[1];
-    ret.width = tableCellStr.length - 1;
+    let contents;
+    //is empty cell?
+    contents = /^(\s*)\|/.exec(tableCellStr);
+    if (contents !== null) {
+      ret.contents = '';
+    } else {
+      contents = /\s*([^\|\n\r]+[^\s])\s*(?:\||\+)/.exec(tableCellStr);
+      ret.contents = contents[1];
+    }
     return ret;
   }
 

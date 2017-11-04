@@ -38,6 +38,13 @@ describe('parses table cell', () => {
       width: 10
     });
   });
+  test('parses empty table cell', () => {
+    const tableCellStr = '             |';
+    expect(OrgTableCell.parse(tableCellStr)).toEqual({
+      contents: '',
+      width: 13
+    });
+  });
 });
 
 describe('has static method "serialize"', () => {
