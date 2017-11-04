@@ -22,6 +22,18 @@ describe('parses table cell', () => {
       contents: 'foo bar baz'
     });
   });
+  test('parses table cell of "rule" type, intermediate', () => {
+    const tableCellStr = '--------------------+';
+    expect(OrgTableCell.parse(tableCellStr)).toEqual({
+      contents: '--------------------'
+    });
+  });
+  test('parses table cell of "rule" type, end', () => {
+    const tableCellStr = '----------|';
+    expect(OrgTableCell.parse(tableCellStr)).toEqual({
+      contents: '----------'
+    });
+  });
 });
 
 describe('has static method "serialize"', () => {

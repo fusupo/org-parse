@@ -5,7 +5,7 @@ class OrgTableCell {
     const ret = {
       contents: null
     };
-    const contents = /\s*([^\|\n\r]*)\b\s*/.exec(tableCellStr);
+    const contents = /\s*([^\|\n\r]+[^\s])\s*(?:\||\+)/.exec(tableCellStr);
     ret.contents = contents[1];
     return ret;
   }
