@@ -3,6 +3,7 @@ const OrgTableRow = require('./OrgTableRow');
 const tableRowA = `|-----------------------+----------------+--------------|`;
 const tableRowB = `| foo                   | bar            | baz          |`;
 const tableRowC = `| some table cell stuff | some more here | here as well |`;
+const tableRowD = `|                       |                |              |`;
 
 describe('has static method "parse"', () => {
   test('static attribute parse exists', () => {
@@ -39,6 +40,16 @@ describe('parses table row', () => {
         { contents: 'some table cell stuff', width: 23 },
         { contents: 'some more here', width: 16 },
         { contents: 'here as well', width: 14 }
+      ]
+    });
+  });
+  test('parses table row of empty cells', () => {
+    expect(OrgTableRow.parse(tableRowD)).toEqual({
+      type: OrgTableRow.STANDARD,
+      cells: [
+        { contents: '', width: 23 },
+        { contents: '', width: 16 },
+        { contents: '', width: 14 }
       ]
     });
   });
@@ -89,5 +100,17 @@ describe('serialize table row', () => {
         ]
       })
     ).toBe(tableRowB);
+  });
+  test('serializes table row of empty cells', () => {
+    expect(
+      OrgTableRow.serialize({
+        type: OrgTableRow.STANDARD,
+        cells: [
+          { contents: '', width: 23 },
+          { contents: '', width: 16 },
+          { contents: '', width: 14 }
+        ]
+      })
+    ).toBe(tableRowD);
   });
 });
