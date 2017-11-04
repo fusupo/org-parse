@@ -13,25 +13,29 @@ describe('parses table cell', () => {
   test('parses basic table cell', () => {
     const tableCellStr = ' foo bar baz |';
     expect(OrgTableCell.parse(tableCellStr)).toEqual({
-      contents: 'foo bar baz'
+      contents: 'foo bar baz',
+      width: 13
     });
   });
   test('parses table cell with many spaces between content and "|"', () => {
     const tableCellStr = ' foo bar baz         |';
     expect(OrgTableCell.parse(tableCellStr)).toEqual({
-      contents: 'foo bar baz'
+      contents: 'foo bar baz',
+      width: 21
     });
   });
   test('parses table cell of "rule" type, intermediate', () => {
     const tableCellStr = '--------------------+';
     expect(OrgTableCell.parse(tableCellStr)).toEqual({
-      contents: '--------------------'
+      contents: '--------------------',
+      width: 20
     });
   });
   test('parses table cell of "rule" type, end', () => {
     const tableCellStr = '----------|';
     expect(OrgTableCell.parse(tableCellStr)).toEqual({
-      contents: '----------'
+      contents: '----------',
+      width: 10
     });
   });
 });
@@ -46,34 +50,22 @@ describe('has static method "serialize"', () => {
 });
 
 describe('serializes table cell', () => {
-  test('serializes basic table cell, fit width when no "width" parameter is supplied', () => {
+  test('serializes basic table cell', () => {
     const tableCellStr = ' foo bar baz |';
     expect(
       OrgTableCell.serialize({
-        contents: 'foo bar baz'
+        contents: 'foo bar baz',
+        width: 13
       })
     ).toBe(tableCellStr);
   });
-  test('serializes table cell to appropriate width when "width" parameter is supplied', () => {
-    const tableCellStr = ' foo bar baz         |';
+  test('serializes basic table cell, taking into account cell width attribute', () => {
+    const tableCellStr = ' foo bar baz          |';
     expect(
-      OrgTableCell.serialize(
-        {
-          contents: 'foo bar baz'
-        },
-        21
-      )
-    ).toBe(tableCellStr);
-  });
-  test('serializes table cell to fit width when "width" parameter is too small', () => {
-    const tableCellStr = ' foo bar baz |';
-    expect(
-      OrgTableCell.serialize(
-        {
-          contents: 'foo bar baz'
-        },
-        1
-      )
+      OrgTableCell.serialize({
+        contents: 'foo bar baz',
+        width: 22
+      })
     ).toBe(tableCellStr);
   });
 });

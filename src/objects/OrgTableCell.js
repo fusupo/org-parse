@@ -3,21 +3,19 @@ const padEnd = require('../../utils').padEnd;
 class OrgTableCell {
   static parse(tableCellStr) {
     const ret = {
-      contents: null
+      contents: null,
+      width: null
     };
     const contents = /\s*([^\|\n\r]+[^\s])\s*(?:\||\+)/.exec(tableCellStr);
     ret.contents = contents[1];
+    ret.width = tableCellStr.length - 1;
     return ret;
   }
 
-  static serialize(tableCellObj, width = -1) {
+  static serialize(tableCellObj) {
     let ret = ` ${tableCellObj.contents}`;
-    if (width === -1) {
-      ret += ' |';
-    } else {
-      const targPad = width - ret.length;
-      ret = targPad > -1 ? padEnd(ret, targPad, ' ') + '|' : ret + ' |';
-    }
+    const targPad = tableCellObj.width - ret.length;
+    ret = targPad > -1 ? padEnd(ret, targPad, ' ') + '|' : ret + ' |';
     return ret;
   }
 }
