@@ -12,17 +12,15 @@ describe('has static method "parse"', () => {
 describe('parses time', () => {
   test('parses time with single digit "H"', () => {
     const time = '9:30';
-    expect(OrgTime.parse(time)).toEqual({
-      hh: 9,
-      mm: 30
-    });
+    const parsedObj = OrgTime.parse(time, {});
+    expect(parsedObj.hh).toBe(9);
+    expect(parsedObj.mm).toBe(30);
   });
   test('parses time with double digit "HH"', () => {
     const time = '19:00';
-    expect(OrgTime.parse(time)).toEqual({
-      hh: 19,
-      mm: 0
-    });
+    const parsedObj = OrgTime.parse(time, {});
+    expect(parsedObj.hh).toBe(19);
+    expect(parsedObj.mm).toBe(0);
   });
 });
 

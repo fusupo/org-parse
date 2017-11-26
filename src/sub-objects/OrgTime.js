@@ -1,18 +1,24 @@
-const padStartMaybe = require('../../utils').padStartMaybe;
+const { padStartMaybe, randomId } = require('../../utils');
 
 class OrgTime {
-  static parse(timeStr) {
+  static get name() {
+    return 'OrgTime';
+  }
+  static parse(timeStr, store) {
+    if (store[OrgTime.name] === undefined) {
+      store[OrgTime.name] = {};
+    }
     // assuming well formed timeStr
     // something like 12:12 or
     // 09:00 or
     // 9:00
-    const ret = {
-      hh: '',
-      mm: ''
-    };
+    const ret = {}; //new OrgTime();
     const parts = timeStr.split(':');
+    ret.id = randomId();
     ret.hh = parseInt(parts[0]);
     ret.mm = parseInt(parts[1]);
+
+    store[OrgTime.name][ret.id] = ret;
     return ret;
   }
 
@@ -27,7 +33,9 @@ class OrgTime {
       2,
       '0'
     )}`;
+    return '';
   }
+  //--------------------
 }
 
 module.exports = OrgTime;
