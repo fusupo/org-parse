@@ -1,3 +1,9 @@
+const shortid = require('shortid');
+
+const randomId = () => {
+  return shortid.generate();
+};
+
 const padStart = (inStr, targLen, padStr = ' ') => {
   // pads targLen padStrs
   let outStr = '';
@@ -5,6 +11,16 @@ const padStart = (inStr, targLen, padStr = ' ') => {
     outStr += padStr;
   }
   outStr += inStr;
+  return outStr;
+};
+
+const padEnd = (inStr, targLen, padStr = ' ') => {
+  // pads targLen padStrs
+  let outStr = '';
+  for (let i = 0; i < targLen; i++) {
+    outStr += padStr;
+  }
+  outStr = inStr + outStr;
   return outStr;
 };
 
@@ -22,7 +38,9 @@ const activeTimeStampFromNode = n => {
   return n.scheduled;
 };
 
+module.exports.randomId = randomId;
 module.exports.padStart = padStart;
+module.exports.padEnd = padEnd;
 module.exports.padStartMaybe = padStartMaybe;
 module.exports.nodeHasActiveTimeStamp_p = nodeHasActiveTimeStamp_p;
 module.exports.activeTimeStampFromNode = activeTimeStampFromNode;
