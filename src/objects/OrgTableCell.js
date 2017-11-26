@@ -2,9 +2,9 @@ const { padEnd, randomId } = require('../../utils');
 
 class OrgTableCell {
   static get name() {
-    return 'OrgTableCall';
+    return 'OrgTableCell';
   }
-  static parse(tableCellStr) {
+  static parse(tableCellStr, store) {
     if (store[OrgTableCell.name] === undefined) {
       store[OrgTableCell.name] = {};
     }

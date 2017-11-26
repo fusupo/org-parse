@@ -74,7 +74,10 @@ describe('has static method "parse"', () => {
 
 describe('parses table', () => {
   test('parses table', () => {
-    expect(OrgTable.parse(table)).toEqual(tableObj);
+    let store = {};
+    let parsedObj = OrgTable.parse(table.split('\n'), store);
+    console.log(parsedObj.result);
+    expect(parsedObj.result).toEqual(tableObj);
   });
 });
 
