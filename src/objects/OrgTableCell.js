@@ -1,8 +1,16 @@
-const padEnd = require('../../utils').padEnd;
+const { padEnd, randomId } = require('../../utils');
 
 class OrgTableCell {
+  static get name() {
+    return 'OrgTableCall';
+  }
   static parse(tableCellStr) {
+    if (store[OrgTableCell.name] === undefined) {
+      store[OrgTableCell.name] = {};
+    }
+
     const ret = {
+      id: randomId(),
       contents: null,
       width: tableCellStr.length - 1
     };
@@ -15,6 +23,8 @@ class OrgTableCell {
       contents = /\s*([^\|\n\r]+[^\s])\s*(?:\||\+)/.exec(tableCellStr);
       ret.contents = contents[1];
     }
+
+    store[OrgTableCell.name][ret.id] = ret;
     return ret;
   }
 
