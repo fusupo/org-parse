@@ -12,13 +12,23 @@ class OrgTime {
     // something like 12:12 or
     // 09:00 or
     // 9:00
-    const ret = {}; //new OrgTime();
     const parts = timeStr.split(':');
-    ret.id = randomId();
-    ret.hh = parseInt(parts[0]);
-    ret.mm = parseInt(parts[1]);
+    const [hh, mm] = parts;
 
-    store[OrgTime.name][ret.id] = ret;
+    const prexisting = Object.values(store[OrgTime.name]).find(foo => {
+      return foo.hh === hh && foo.mm === mm;
+    });
+
+    let ret;
+    if (prexisting) {
+      ret = prexisting;
+    } else {
+      ret = {}; //new OrgTime();
+      ret.hh = hh;
+      ret.mm = mm;
+      ret.id = randomId();
+      store[OrgTime.name][ret.id] = ret;
+    }
     return ret;
   }
 
