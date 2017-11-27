@@ -33,7 +33,6 @@ class OrgTimestamp {
   static get name() {
     return 'OrgTimestamp';
   }
-
   static parse(timestampStr, store) {
     if (store[OrgTimestamp.name] === undefined) {
       store[OrgTimestamp.name] = {};
@@ -57,6 +56,7 @@ class OrgTimestamp {
     if (cachedTimestamp !== undefined) return cachedTimestamp;
 
     let ret = {
+      id: randomId(),
       type: null,
       date: null,
       dateStart: null,
