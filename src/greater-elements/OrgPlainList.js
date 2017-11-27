@@ -70,12 +70,12 @@ class OrgListItem {
         (!unorderedListMatch[5].startsWith('Note taken on [') &&
           !unorderedListMatch[5].startsWith('State "')))
     ) {
-      console.log('UNORDERED: ', firstLine);
-      console.log(unorderedListMatch);
+      //console.log('UNORDERED: ', firstLine);
+      //console.log(unorderedListMatch);
       //value = firstLine;
       if (listItemData.length > 1) {
         let res = OrgPlainList.parse(listItemData.slice(1), store);
-        list = res.result.id;
+        list = res.result && res.result.id;
       }
       match = unorderedListMatch;
       indentation = match[1].length;
@@ -84,11 +84,11 @@ class OrgListItem {
       tag = match[4] || null;
       value = match[5] || null;
     } else if (orderedListMatch !== null) {
-      console.log('ORDERED: ', firstLine);
+      //console.log('ORDERED: ', firstLine);
       //value = firstLine;
       if (listItemData.length > 1) {
         let res = OrgPlainList.parse(listItemData.slice(1), store);
-        list = res.result.id;
+        list = res.result && res.result.id;
       }
       //console.log(orderedListMatch);
       //console.log(res);
@@ -134,6 +134,12 @@ class OrgPlainList {
     return 'OrgPlainList';
   }
   static parse(plainlistData, store) {
+    let firstLine = plainlistData[0];
+    let isListItem =
+      orderedList_re.exec(firstLine) !== null ||
+      unorderedList_re.exec(firstLine) !== null;
+    if (!isListItem) return { result: null, delta: 0 };
+
     if (store[OrgPlainList.name] === undefined) {
       store[OrgPlainList.name] = {};
     }
