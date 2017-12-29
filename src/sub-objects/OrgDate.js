@@ -50,6 +50,11 @@ class OrgDate {
       '0'
     )} ${dayName}`;
   }
+
+  static toMilli(dateObj) {
+    let date = new Date(dateObj.yyyy, dateObj.mm, dateObj.dd);
+    return date.valueOf();
+  }
 }
 
 module.exports = OrgDate;
