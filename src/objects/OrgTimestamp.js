@@ -225,72 +225,66 @@ class OrgTimestamp {
     return Object.values(store[OrgTimestamp.name]);
   }
 
-  static compare(a, b) {
-    let dateA = a.date || a.dateStart;
-    let timeA = a.time || a.timeStart;
-    let dateB = b.date || b.dateStart;
-    let timeB = b.time || b.timeStart;
-    let dateStrA = dateA.yyyy.toString();
-    dateStrA +=
-      dateA.mm.toString().length < 2
-        ? '0' + dateA.mm.toString()
-        : dateA.mm.toString();
-    dateStrA +=
-      dateA.dd.toString().length < 2
-        ? '0' + dateA.dd.toString()
-        : dateA.dd.toString();
-    let dateStrB = dateB.yyyy.toString();
-    dateStrB +=
-      dateB.mm.toString().length < 2
-        ? '0' + dateB.mm.toString()
-        : dateB.mm.toString();
-    dateStrB +=
-      dateB.dd.toString().length < 2
-        ? '0' + dateB.dd.toString()
-        : dateB.dd.toString();
+  static compare(a, b, store) {
+    let dateAId = a.date || a.dateStart;
+    let timeAId = a.time || a.timeStart;
+    let dateBId = b.date || b.dateStart;
+    let timeBId = b.time || b.timeStart;
 
-    if (+dateStrA - +dateStrB !== 0) {
-      return +dateStrA - +dateStrB;
-    } else {
-      let timeStrA = '0';
-      let timeStrB = '0';
-      if (timeA) {
-        timeStrA = timeA.hh < 10 ? '0' + timeA.hh : timeA.hh.toString();
-        timeStrA += timeA.mm < 10 ? '0' + timeA.mm : timeA.mm.toString();
-      }
-      if (timeB) {
-        timeStrB = timeB.hh < 10 ? '0' + timeB.hh : timeB.hh.toString();
-        timeStrB += timeB.mm < 10 ? '0' + timeB.mm : timeB.mm.toString();
-      }
-      return +timeStrA - +timeStrB;
-    }
+    //console.log(dateAId, timeAId, dateBId, timeBId);
+    let dateA = store[OrgDate.name][dateAId];
+    let timeA = store[OrgTime.name][timeAId];
+    let dateB = store[OrgDate.name][dateBId];
+    let timeB = store[OrgTime.name][timeBId];
+
+    //console.log(dateA, timeA, dateB, timeB);
+    let dateAMilli = OrgDate.toMilli(dateA);
+    let timeAMilli = OrgTime.toMilli(timeA);
+    let dateBMilli = OrgDate.toMilli(dateB);
+    let timeBMilli = OrgTime.toMilli(timeB);
+
+    let milliA = dateAMilli + timeAMilli;
+    let milliB = dateBMilli + timeBMilli;
+
+    //console.log(milliA - milliB);
+    return milliA - milliB;
   }
 
-  static get timestamps() {
-    let tss = Object.values(cache);
-    tss.sort(OrgTimestamp.compare);
-    return tss;
+  static fromId(id, store) {
+    return store[OrgTimestamp.name][id];
   }
 
-  static timestampRange(aStr, bStr) {
-    const timestamps = OrgTimestamp.timestamps;
-    const a = OrgTimestamp.parse(aStr, false);
-    const b = OrgTimestamp.parse(bStr, false);
-    if (a && b) {
-      const idxstart = timestamps.findIndex(ts => {
-        console.log(OrgTimestamp.compare(a, ts));
-        return OrgTimestamp.compare(a, ts) < 0;
-      });
-      const idxend = timestamps.findIndex(ts => {
-        console.log(OrgTimestamp.compare(b, ts));
-        return OrgTimestamp.compare(b, ts) < 0;
-      });
-      console.log(idxstart, idxend);
-      return timestamps.splice(idxstart, idxend - idxstart);
-    }
-    return [];
-  }
+  // static get timestamps() {
+  //   let tss = Object.values(cache);
+  //   tss.sort(OrgTimestamp.compare);
+  //   return tss;
+  // }
+
+  // static timestampRange(aStr, bStr) {
+  //   const timestamps = OrgTimestamp.timestamps;
+  //   const a = OrgTimestamp.parse(aStr, false);
+  //   const b = OrgTimestamp.parse(bStr, false);
+  //   if (a && b) {
+  //     const idxstart = timestamps.findIndex(ts => {
+  //       console.log(OrgTimestamp.compare(a, ts));
+  //       return OrgTimestamp.compare(a, ts) < 0;
+  //     });
+  //     const idxend = timestamps.findIndex(ts => {
+  //       console.log(OrgTimestamp.compare(b, ts));
+  //       return OrgTimestamp.compare(b, ts) < 0;
+  //     });
+  //     console.log(idxstart, idxend);
+  //     return timestamps.splice(idxstart, idxend - idxstart);
+  //   }
+  //   return [];
+  // }
   //--------------------
+  static addToRefs(key, val, ts) {
+    if (ts.refs[key] === undefined) {
+      ts.refs[key] = [];
+    }
+    ts.refs[key].push(val);
+  }
 }
 
 module.exports = OrgTimestamp;
