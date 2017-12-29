@@ -154,46 +154,50 @@ describe('parses inactive timestamp', () => {
   });
 });
 
-// describe('has static method "serialize"', () => {
-//   test('static attribute serialize exists', () => {
-//     expect(OrgTimestamp.serialize).toBeDefined();
-//   });
-//   test('static attribute parse is a function', () => {
-//     expect(OrgTimestamp.serialize).toBeInstanceOf(Function);
-//   });
-// });
+describe('has static method "serialize"', () => {
+  test('static attribute serialize exists', () => {
+    expect(OrgTimestamp.serialize).toBeDefined();
+  });
+  test('static attribute parse is a function', () => {
+    expect(OrgTimestamp.serialize).toBeInstanceOf(Function);
+  });
+});
 
-// describe('serializes active timestamp', () => {
-//   test('serializes active timestamp without time or reapeater-or-delay', () => {
-//     const timestampStr = '<2017-10-30 Mon>';
-//     const timestampObj = gimmeTimestampObj({
-//       type: OrgTimestamp.ACTIVE,
-//       date: new OrgDate(2017, 10, 30, 'Mon')
-//     });
-//     expect(OrgTimestamp.serialize(timestampObj)).toBe(timestampStr);
-//   });
+describe('serializes active timestamp', () => {
+  test('without time or reapeater-or-delay', () => {
+    const timestampStr = '<2017-10-30 Mon>';
+    const store = {};
+    const timestampObj = gimmeTimestampObj({
+      type: OrgTimestamp.ACTIVE,
+      date: OrgDate.parse('2017-10-30 Mon', store).id
+    });
 
-//   test('serializes active timestamp with time but no repeater-or-delay', () => {
-//     const timestampStr = '<2017-10-31 Tue 20:45>';
-//     const timestampObj = gimmeTimestampObj({
-//       type: OrgTimestamp.ACTIVE,
-//       date: new OrgDate(2017, 10, 31, 'Tue'),
-//       time: new OrgTime(20, 45)
-//     });
-//     expect(OrgTimestamp.serialize(timestampObj)).toBe(timestampStr);
-//   });
+    expect(OrgTimestamp.serialize(timestampObj, store)).toBe(timestampStr);
+  });
 
-//   test('serializes active timestamp range B', () => {
-//     const timestampStr = '<2017-10-31 Tue 20:45-21:37>';
-//     const timestampObj = gimmeTimestampObj({
-//       type: OrgTimestamp.ACTIVE_RANGE_B,
-//       date: new OrgDate(2017, 10, 31, 'Tue'),
-//       timeStart: new OrgTime(20, 45),
-//       timeEnd: new OrgTime(21, 37)
-//     });
-//     expect(OrgTimestamp.serialize(timestampObj)).toEqual(timestampStr);
-//   });
-// });
+  test('with time but no repeater-or-delay', () => {
+    const timestampStr = '<2017-10-31 Tue 20:45>';
+    const store = {};
+    const timestampObj = gimmeTimestampObj({
+      type: OrgTimestamp.ACTIVE,
+      date: OrgDate.parse('2017-10-31 Tue', store).id,
+      time: OrgTime.parse('20:45', store).id
+    });
+    expect(OrgTimestamp.serialize(timestampObj, store)).toBe(timestampStr);
+  });
+
+  test('range B', () => {
+    const timestampStr = '<2017-10-31 Tue 20:45-21:37>';
+    const store = {};
+    const timestampObj = gimmeTimestampObj({
+      type: OrgTimestamp.ACTIVE_RANGE_B,
+      date: OrgDate.parse('2017-10-31 Tue', store).id,
+      timeStart: OrgTime.parse('20:45', store).id,
+      timeEnd: OrgTime.parse('21:37', store).id
+    });
+    expect(OrgTimestamp.serialize(timestampObj, store)).toEqual(timestampStr);
+  });
+});
 
 // describe('serializes inactive timestamp', () => {
 //   test('serializes inactive timestamp without time or reapeater-or-delay', () => {
