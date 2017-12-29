@@ -13,39 +13,39 @@ class OrgTime {
     // 09:00 or
     // 9:00
     const parts = timeStr.split(':');
-    const [hh, mm] = parts;
+    let [hh, mm] = parts;
+    hh = parseInt(hh);
+    mm = parseInt(mm);
 
-    const prexisting = Object.values(store[OrgTime.name]).find(foo => {
-      return foo.hh === hh && foo.mm === mm;
+    const prexisting = Object.values(store[OrgTime.name]).find(time => {
+      return time.hh === hh && time.mm === mm;
     });
 
     let ret;
     if (prexisting) {
       ret = prexisting;
     } else {
-      ret = {}; //new OrgTime();
-      ret.hh = hh;
-      ret.mm = mm;
-      ret.id = randomId();
+      ret = { id: randomId(), hh, mm };
       store[OrgTime.name][ret.id] = ret;
     }
     return ret;
   }
 
   static serialize(timeObj) {
-    // !! assuming well formed timeObj
-    // {
-    //   hh: int [0-23],
-    //   mm: int [0-59]
-    // }
     return `${padStartMaybe(timeObj.hh.toString(), 2, '0')}:${padStartMaybe(
       timeObj.mm.toString(),
       2,
       '0'
     )}`;
-    return '';
   }
+
   //--------------------
+
+  static toMilli(timeObj) {
+    let millisH = timeObj.hh * (1000 * 60 * 60); //number of millis in an hour
+    let millisM = timeObj.mm * (1000 * 60); // number of millis in a minute
+    return millisH + millisM;
+  }
 }
 
 module.exports = OrgTime;
