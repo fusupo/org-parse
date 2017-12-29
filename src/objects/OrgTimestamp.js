@@ -159,11 +159,9 @@ class OrgTimestamp {
       // }
     } else {
       console.log('something went wrong: ', timestampStr);
-      //reht = new OrgTimestamp();
     }
 
     store[OrgTimestamp.name][ret.id] = ret;
-    //console.log(ret);
     return ret;
   }
 
