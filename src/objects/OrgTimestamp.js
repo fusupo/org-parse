@@ -167,14 +167,15 @@ class OrgTimestamp {
     return ret;
   }
 
-  static serialize(timestampObj) {
+  static serialize(timestampObj, store) {
     let ret = '';
     switch (timestampObj.type) {
       case OrgTimestamp.ACTIVE:
         ret += '<';
-        ret += OrgDate.serialize(timestampObj.date);
+        ret += OrgDate.serialize(store[OrgDate.name][timestampObj.date], store);
         ret += timestampObj.time
-          ? ' ' + OrgTime.serialize(timestampObj.time)
+          ? ' ' +
+            OrgTime.serialize(store[OrgTime.name][timestampObj.time], store)
           : '';
         ret += '>';
         break;
@@ -192,12 +193,15 @@ class OrgTimestamp {
         break;
       case OrgTimestamp.ACTIVE_RANGE_B:
         ret += '<';
-        ret += OrgDate.serialize(timestampObj.date);
+        ret += OrgDate.serialize(store[OrgDate.name][timestampObj.date], store);
         ret +=
           ' ' +
-          OrgTime.serialize(timestampObj.timeStart) +
+          OrgTime.serialize(
+            store[OrgTime.name][timestampObj.timeStart],
+            store
+          ) +
           '-' +
-          OrgTime.serialize(timestampObj.timeEnd);
+          OrgTime.serialize(store[OrgTime.name][timestampObj.timeEnd], store);
         ret += '>';
         break;
       case OrgTimestamp.INACTIVE_RANGE_B:
