@@ -106,6 +106,7 @@ class OrgTimestamp {
       const inactive_ts_re = /\[([0-9]{4}-[0-9]{2}-[0-9]{2} [MonTueWedThuFriSatSun]{3})(?: ([0-9]+\:[0-9]{2})(?:-([0-9]+\:[0-9]{2}))?)?(?: ([\.\+]+[0-9]+[mhdwmy]))?(?: (\-[0-9]+[mhdwmy]))?\]/;
 
       let match = inactive_ts_re.exec(timestampStr);
+
       if (match !== null) {
         ret.type = OrgTimestamp.INACTIVE;
 
@@ -116,7 +117,7 @@ class OrgTimestamp {
         } else if (match[2] && match[3]) {
           ret.type = OrgTimestamp.INACTIVE_RANGE_B;
 
-          ret.timeStart = OrgTime.parse(match[2].store).id;
+          ret.timeStart = OrgTime.parse(match[2], store).id;
           ret.timeEnd = OrgTime.parse(match[3], store).id;
         }
 
@@ -128,6 +129,7 @@ class OrgTimestamp {
           ret.delay = match[5];
         }
       }
+
       // match = inactive_ts_re.exec(timestampStr);
       // if (match !== null) {
       //   ret.type = OrgTimestamp.INACTIVE;
