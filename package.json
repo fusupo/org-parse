@@ -9,6 +9,7 @@
   "author": "Marc Christophe",
   "license": "ISC",
   "dependencies": {
+    "datascript-mori": "^0.17.0",
     "moment": "^2.18.1",
     "shortid": "^2.2.8"
   },

@@ -1,16 +1,12 @@
-const { randomId } = require('../../utils');
 const OrgTimestamp = require('../objects/OrgTimestamp');
 
 const org_scheduled_or_deadline_start_re = /^[ /t]*SCHEDULED:[ /t]*|^[ /t]*DEADLINE:[ /t]*|^[ /t]*CLOSED:[ /t]*/gm; ///^[ \t]*SCHEDULED:[ \t]*/;
 
 class OrgPlanning {
   static get name() {
-    return 'OrgPlanning';
+    return 'org.planning';
   }
-  static parse(planningData, store) {
-    if (store[OrgPlanning.name] === undefined) {
-      store[OrgPlanning.name] = {};
-    }
+  static parse(planningData) {
     let result = null;
     let delta = 0;
 
@@ -25,7 +21,7 @@ class OrgPlanning {
 
     if (planningStr.match(org_scheduled_or_deadline_start_re)) {
       result = {
-        id: randomId(),
+        type: OrgPlanning.name,
         scheduled: null,
         deadline: null,
         closed: null
@@ -36,36 +32,30 @@ class OrgPlanning {
         let entry = entries.shift();
         if (entry.startsWith('SCHEDULED: ')) {
           result.scheduled = OrgTimestamp.parse(
-            entry.substr('SCHEDULED: '.length),
-            store
-          ).id;
-
-          // if (store) result.scheduled.addToRef(result, 'planning:scheduled');
+            entry.substr('SCHEDULED: '.length)
+          );
         } else if (entry.startsWith('DEADLINE: ')) {
           result.deadline = OrgTimestamp.parse(
-            entry.substr('DEADLINE: '.length),
-            store
-          ).id;
-
-          // if (store) result.deadline.addToRef(result, 'planning:deadline');
+            entry.substr('DEADLINE: '.length)
+          );
         } else if (entry.startsWith('CLOSED: ')) {
-          result.closed = OrgTimestamp.parse(
-            entry.substr('CLOSED: '.length),
-            store
-          ).id;
-
-          // if (store) result.closed.addToRef(result, 'planning:closed');
+          result.closed = OrgTimestamp.parse(entry.substr('CLOSED: '.length));
         } else {
           console.log('unknown planning entry type');
         }
       }
-      //
-      store[OrgPlanning.name][result.id] = result;
     }
 
     return { result, delta };
   }
-  static serialize(orgPlanning) {}
+  static serialize(orgPlanning) {
+    let ret = '';
+    const { scheduled, deadline, closed } = orgPlanning;
+    if (scheduled) ret += `SCHEDULED: ${OrgTimestamp.serialize(scheduled)}`;
+    if (deadline) ret += ` DEADLINE: ${OrgTimestamp.serialize(deadline)}`;
+    if (closed) ret += ` CLOSED: ${OrgTimestamp.serialize(closed)}`;
+    return ret.trim();
+  }
   //--------------------
   // constructor() {
   //   this.scheduled = null;

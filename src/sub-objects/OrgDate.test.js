@@ -12,14 +12,12 @@ describe('has static method "parse"', () => {
 describe('parsing', () => {
   test('parses date from string', () => {
     const dateStr = '2017-10-30 Mon';
-    const store = {};
-    const parsedObj = OrgDate.parse(dateStr, store);
+    const parsedObj = OrgDate.parse(dateStr);
 
     expect(parsedObj.yyyy).toBe(2017);
     expect(parsedObj.mm).toBe(10);
     expect(parsedObj.dd).toBe(30);
     expect(parsedObj.dayName).toBe('Mon');
-    expect(parsedObj.id).toBeDefined();
   });
 });
 

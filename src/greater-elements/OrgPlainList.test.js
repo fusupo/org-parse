@@ -52,8 +52,10 @@ list11 = `- on DVD only
   21) yet another`;
 
 list12 = `  1. foo
-
-   2. some other crap`;
+        
+     1. foog
+     2. barzjk
+  2. some other crap`;
 
 list13 = `1. food
 1. barely
@@ -76,7 +78,6 @@ list13 = `1. food
    baz
 4. quad
 
-
    foo
 1. caz
 2. funky
@@ -84,11 +85,7 @@ list13 = `1. food
 
 listxxx = '- foobar \n- Note taken on [2017-11-07 Tue 09:01] \\';
 
-const store = {};
-const res = OrgPlainList.parse(list13.split('\n'), store);
-//console.log(JSON.stringify(res.result, null, ' '));
-//console.log(JSON.stringify(res.result, null, ' '));
-console.log(JSON.stringify(store, null, ' '));
+// const res = OrgPlainList.parse(listxxx.split('\n'));
 
 describe('has static method "parse"', () => {
   test('static attribute parse exists', () => {
@@ -99,19 +96,121 @@ describe('has static method "parse"', () => {
   });
 });
 
-// describe('parsing', () => {
-//   test('parses date from string', () => {
-//     const dateStr = '2017-10-30 Mon';
-//     const store = {};
-//     const parsedObj = OrgPlainList.parse(dateStr, store);
-
-//     expect(parsedObj.yyyy).toBe(2017);
-//     expect(parsedObj.mm).toBe(10);
-//     expect(parsedObj.dd).toBe(30);
-//     expect(parsedObj.dayName).toBe('Mon');
-//     expect(parsedObj.id).toBeDefined();
+// describe('parsing single line list', () => {
+//   test('numerical simple case', () => {
+//     let res = OrgPlainList.parse(list3.split('\n'));
+//     expect(res).toEqual({
+//       delta: 1,
+//       result: {
+//         items: [
+//           {
+//             bullet: ')',
+//             checkbox: null,
+//             counter: 10,
+//             counterSet: null,
+//             list: null,
+//             tag: null,
+//             value: 'bar'
+//           }
+//         ]
+//       }
+//     });
+//   });
+//   test('numerical case with counterSet and checkbox', () => {
+//     let res = OrgPlainList.parse(list4.split('\n'));
+//     expect(res).toEqual({
+//       delta: 1,
+//       result: {
+//         items: [
+//           {
+//             bullet: ')',
+//             checkbox: 'X',
+//             counter: 10,
+//             counterSet: 10,
+//             list: null,
+//             tag: null,
+//             value: 'bar'
+//           }
+//         ]
+//       }
+//     });
+//   });
+//   test('numerical case with tag', () => {
+//     let res = OrgPlainList.parse(list5.split('\n'));
+//     expect(res).toEqual({
+//       delta: 1,
+//       result: {
+//         items: [
+//           {
+//             bullet: '.',
+//             checkbox: null,
+//             counter: 1,
+//             counterSet: null,
+//             list: null,
+//             tag: 'someshit',
+//             value: 'crap'
+//           }
+//         ]
+//       }
+//     });
+//   });
+//   test('numerical case with counterSet, checkbox, and tag', () => {
+//     let res = OrgPlainList.parse(list6.split('\n'));
+//     expect(res).toEqual({
+//       delta: 1,
+//       result: {
+//         items: [
+//           {
+//             bullet: ')',
+//             checkbox: 'X',
+//             counter: 10,
+//             counterSet: 10,
+//             list: null,
+//             tag: 'bar',
+//             value: 'baz'
+//           }
+//         ]
+//       }
+//     });
 //   });
 // });
+
+describe('parsing two line list', () => {
+  // test('two unordered lines (despite one of them looking like a logbook entry)', () => {
+  //   let txt = listxxx.split('\n');
+  //   let res = OrgPlainList.parse(txt);
+  //   expect(res).toEqual({
+  //     delta: 2,
+  //     result: {
+  //       items: [
+  //         {
+  //           bullet: '-',
+  //           checkbox: null,
+  //           counter: null,
+  //           counterSet: null,
+  //           list: null,
+  //           tag: null,
+  //           value: 'foobar '
+  //         },
+  //         {
+  //           bullet: '-',
+  //           checkbox: null,
+  //           counter: null,
+  //           counterSet: null,
+  //           list: null,
+  //           tag: null,
+  //           value: 'Note taken on [2017-11-07 Tue 09:01] \\'
+  //         }
+  //       ]
+  //     }
+  //   });
+  // });
+  test('ordered, indented...with hard return between entries', () => {
+    let txt = list12.split('\n');
+    let res = OrgPlainList.parse(txt);
+    console.log(JSON.stringify(res, null, 1));
+  });
+});
 
 describe('has static method "serialize"', () => {
   test('static attribute serialize exists', () => {

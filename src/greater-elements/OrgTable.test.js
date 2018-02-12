@@ -60,7 +60,7 @@ const tableObj = {
       ]
     }
   ],
-  formulas: []
+  tableFormulas: null
 };
 
 describe('has static method "parse"', () => {
@@ -74,9 +74,8 @@ describe('has static method "parse"', () => {
 
 describe('parses table', () => {
   test('parses table', () => {
-    let store = {};
-    let parsedObj = OrgTable.parse(table.split('\n'), store);
-    console.log(parsedObj.result);
+    let parsedObj = OrgTable.parse(table.split('\n'));
+    console.log(JSON.stringify(parsedObj.result, null, 1));
     expect(parsedObj.result).toEqual(tableObj);
   });
 });

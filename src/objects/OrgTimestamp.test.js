@@ -37,56 +37,52 @@ describe('has static method "parse"', () => {
 describe('parses active timestamp', () => {
   test('parses active timestamp without time or reapeater-or-delay', () => {
     const timestampStr = '<2017-10-30 Mon>';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.ACTIVE,
-      date: OrgDate.parse('2017-10-30 Mon', store).id
+      date: OrgDate.parse('2017-10-30 Mon')
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(timestampObj.type).toBe(parsedObj.type);
-    expect(timestampObj.date).toBe(parsedObj.date);
+    expect(timestampObj.date).toEqual(parsedObj.date);
   });
 
   test('parses active timestamp with time but no repeater-or-delay', () => {
     const timestampStr = '<2017-10-31 Tue 20:45>';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.ACTIVE,
-      date: OrgDate.parse('2017-10-31 Tue', store).id,
-      time: OrgTime.parse('20:45', store).id
+      date: OrgDate.parse('2017-10-31 Tue'),
+      time: OrgTime.parse('20:45')
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(parsedObj.type).toBe(timestampObj.type);
-    expect(parsedObj.date).toBe(timestampObj.date);
-    expect(parsedObj.time).toBe(timestampObj.time);
+    expect(parsedObj.date).toEqual(timestampObj.date);
+    expect(parsedObj.time).toEqual(timestampObj.time);
   });
 
   test('parses active timestamp range B', () => {
     const timestampStr = '<2017-10-31 Tue 20:45-21:37>';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.ACTIVE_RANGE_B,
-      date: OrgDate.parse('2017-10-31 Tue', store).id,
-      timeStart: OrgTime.parse('20:45', store).id,
-      timeEnd: OrgTime.parse('21:37', store).id
+      date: OrgDate.parse('2017-10-31 Tue'),
+      timeStart: OrgTime.parse('20:45'),
+      timeEnd: OrgTime.parse('21:37')
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(parsedObj.type).toBe(timestampObj.type);
-    expect(parsedObj.date).toBe(timestampObj.date);
-    expect(parsedObj.timeStart).toBe(timestampObj.timeStart);
-    expect(parsedObj.timeEnd).toBe(timestampObj.timeEnd);
+    expect(parsedObj.date).toEqual(timestampObj.date);
+    expect(parsedObj.timeStart).toEqual(timestampObj.timeStart);
+    expect(parsedObj.timeEnd).toEqual(timestampObj.timeEnd);
   });
 
   test('parses active timestamp with repeater', () => {
     const timestampStr = '<2017-05-06 Sat 13:42 .+1w>';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.ACTIVE,
-      date: OrgDate.parse('2017-05-06 Sat', store).id,
-      time: OrgTime.parse('13:42', store).id,
+      date: OrgDate.parse('2017-05-06 Sat'),
+      time: OrgTime.parse('13:42'),
       repeat: '.+1w'
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(parsedObj.type).toEqual(timestampObj.type);
     expect(parsedObj.date).toEqual(timestampObj.date);
     expect(parsedObj.time).toEqual(timestampObj.time);
@@ -97,56 +93,52 @@ describe('parses active timestamp', () => {
 describe('parses inactive timestamp', () => {
   test('parses inactive timestamp without time or reapeater-or-delay', () => {
     const timestampStr = '[2017-10-30 Mon]';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.INACTIVE,
-      date: OrgDate.parse('2017-10-30 Mon', store).id
+      date: OrgDate.parse('2017-10-30 Mon')
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(timestampObj.type).toBe(parsedObj.type);
-    expect(timestampObj.date).toBe(parsedObj.date);
+    expect(timestampObj.date).toEqual(parsedObj.date);
   });
 
   test('parses inactive timestamp with time but no repeater-or-delay', () => {
     const timestampStr = '[2017-10-31 Tue 20:45]';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.INACTIVE,
-      date: OrgDate.parse('2017-10-31 Tue', store).id,
-      time: OrgTime.parse('20:45', store).id
+      date: OrgDate.parse('2017-10-31 Tue'),
+      time: OrgTime.parse('20:45')
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(parsedObj.type).toBe(timestampObj.type);
-    expect(parsedObj.date).toBe(timestampObj.date);
-    expect(parsedObj.time).toBe(timestampObj.time);
+    expect(parsedObj.date).toEqual(timestampObj.date);
+    expect(parsedObj.time).toEqual(timestampObj.time);
   });
 
   test('parses inactive timestamp range B', () => {
     const timestampStr = '[2017-10-31 Tue 20:45-21:37]';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.INACTIVE_RANGE_B,
-      date: OrgDate.parse('2017-10-31 Tue', store).id,
-      timeStart: OrgTime.parse('20:45', store).id,
-      timeEnd: OrgTime.parse('21:37', store).id
+      date: OrgDate.parse('2017-10-31 Tue'),
+      timeStart: OrgTime.parse('20:45'),
+      timeEnd: OrgTime.parse('21:37')
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(parsedObj.type).toBe(timestampObj.type);
-    expect(parsedObj.date).toBe(timestampObj.date);
-    expect(parsedObj.timeStart).toBe(timestampObj.timeStart);
-    expect(parsedObj.timeEnd).toBe(timestampObj.timeEnd);
+    expect(parsedObj.date).toEqual(timestampObj.date);
+    expect(parsedObj.timeStart).toEqual(timestampObj.timeStart);
+    expect(parsedObj.timeEnd).toEqual(timestampObj.timeEnd);
   });
 
   test('parses inactive timestamp with repeater', () => {
     const timestampStr = '[2017-05-06 Sat 13:42 .+1w]';
-    const store = {};
     const timestampObj = gimmeTimestampObj({
       type: OrgTimestamp.INACTIVE,
-      date: OrgDate.parse('2017-05-06 Sat', store).id,
-      time: OrgTime.parse('13:42', store).id,
+      date: OrgDate.parse('2017-05-06 Sat'),
+      time: OrgTime.parse('13:42'),
       repeat: '.+1w'
     });
-    const parsedObj = OrgTimestamp.parse(timestampStr, store);
+    const parsedObj = OrgTimestamp.parse(timestampStr);
     expect(parsedObj.type).toEqual(timestampObj.type);
     expect(parsedObj.date).toEqual(timestampObj.date);
     expect(parsedObj.time).toEqual(timestampObj.time);
@@ -154,79 +146,76 @@ describe('parses inactive timestamp', () => {
   });
 });
 
-describe('has static method "serialize"', () => {
-  test('static attribute serialize exists', () => {
-    expect(OrgTimestamp.serialize).toBeDefined();
-  });
-  test('static attribute parse is a function', () => {
-    expect(OrgTimestamp.serialize).toBeInstanceOf(Function);
-  });
-});
+// describe('has static method "serialize"', () => {
+//   test('static attribute serialize exists', () => {
+//     expect(OrgTimestamp.serialize).toBeDefined();
+//   });
+//   test('static attribute parse is a function', () => {
+//     expect(OrgTimestamp.serialize).toBeInstanceOf(Function);
+//   });
+// });
 
-describe('serializes active timestamp', () => {
-  test('without time or reapeater-or-delay', () => {
-    const timestampStr = '<2017-10-30 Mon>';
-    const store = {};
-    const timestampObj = gimmeTimestampObj({
-      type: OrgTimestamp.ACTIVE,
-      date: OrgDate.parse('2017-10-30 Mon', store).id
-    });
-
-    expect(OrgTimestamp.serialize(timestampObj, store)).toBe(timestampStr);
-  });
-
-  test('with time but no repeater-or-delay', () => {
-    const timestampStr = '<2017-10-31 Tue 20:45>';
-    const store = {};
-    const timestampObj = gimmeTimestampObj({
-      type: OrgTimestamp.ACTIVE,
-      date: OrgDate.parse('2017-10-31 Tue', store).id,
-      time: OrgTime.parse('20:45', store).id
-    });
-    expect(OrgTimestamp.serialize(timestampObj, store)).toBe(timestampStr);
-  });
-
-  test('range B', () => {
-    const timestampStr = '<2017-10-31 Tue 20:45-21:37>';
-    const store = {};
-    const timestampObj = gimmeTimestampObj({
-      type: OrgTimestamp.ACTIVE_RANGE_B,
-      date: OrgDate.parse('2017-10-31 Tue', store).id,
-      timeStart: OrgTime.parse('20:45', store).id,
-      timeEnd: OrgTime.parse('21:37', store).id
-    });
-    expect(OrgTimestamp.serialize(timestampObj, store)).toEqual(timestampStr);
-  });
-});
-
-// describe('serializes inactive timestamp', () => {
-//   test('serializes inactive timestamp without time or reapeater-or-delay', () => {
-//     const timestampStr = '[2017-10-30 Mon]';
+// describe('serializes active timestamp', () => {
+//   test('without time or reapeater-or-delay', () => {
+//     const timestampStr = '<2017-10-30 Mon>';
 //     const timestampObj = gimmeTimestampObj({
-//       type: OrgTimestamp.INACTIVE,
-//       date: new OrgDate(2017, 10, 30, 'Mon')
+//       type: OrgTimestamp.ACTIVE,
+//       date: OrgDate.parse('2017-10-30 Mon')
+//     });
+
+//     expect(OrgTimestamp.serialize(timestampObj)).toBe(timestampStr);
+//   });
+
+//   test('with time but no repeater-or-delay', () => {
+//     const timestampStr = '<2017-10-31 Tue 20:45>';
+//     const timestampObj = gimmeTimestampObj({
+//       type: OrgTimestamp.ACTIVE,
+//       date: OrgDate.parse('2017-10-31 Tue'),
+//       time: OrgTime.parse('20:45')
 //     });
 //     expect(OrgTimestamp.serialize(timestampObj)).toBe(timestampStr);
 //   });
 
-//   test('serializes inactive timestamp with time but no repeater-or-delay', () => {
-//     const timestampStr = '[2017-10-31 Tue 20:45]';
+//   test('range B', () => {
+//     const timestampStr = '<2017-10-31 Tue 20:45-21:37>';
 //     const timestampObj = gimmeTimestampObj({
-//       type: OrgTimestamp.INACTIVE,
-//       date: new OrgDate(2017, 10, 31, 'Tue'),
-//       time: new OrgTime(20, 45)
-//     });
-//     expect(OrgTimestamp.serialize(timestampObj)).toBe(timestampStr);
-//   });
-
-//   test('serializes inactive timestamp range B', () => {
-//     const timestampStr = '[2017-10-31 Tue 20:45-21:37]';
-//     const timestampObj = gimmeTimestampObj({
-//       type: OrgTimestamp.INACTIVE_RANGE_B,
-//       date: new OrgDate(2017, 10, 31, 'Tue'),
-//       timeStart: new OrgTime(20, 45),
-//       timeEnd: new OrgTime(21, 37)
+//       type: OrgTimestamp.ACTIVE_RANGE_B,
+//       date: OrgDate.parse('2017-10-31 Tue'),
+//       timeStart: OrgTime.parse('20:45'),
+//       timeEnd: OrgTime.parse('21:37')
 //     });
 //     expect(OrgTimestamp.serialize(timestampObj)).toEqual(timestampStr);
 //   });
+// });
+
+// describe('serializes inactive timestamp', () => {
+//   test('without time or reapeater-or-delay', () => {
+//     const timestampStr = '[2017-10-30 Mon]';
+//     const timestampObj = gimmeTimestampObj({
+//       type: OrgTimestamp.INACTIVE,
+//       date: OrgDate.parse('2017-10-30 Mon')
+//     });
+//     expect(OrgTimestamp.serialize(timestampObj)).toBe(timestampStr);
+//   });
+
+//   test('with time but no repeater-or-delay', () => {
+//     const timestampStr = '[2017-10-31 Tue 20:45]';
+//     const timestampObj = gimmeTimestampObj({
+//       type: OrgTimestamp.INACTIVE,
+//       date: OrgDate.parse('2017-10-31 Tue'),
+//       time: OrgTime.parse('20:45')
+//     });
+//     expect(OrgTimestamp.serialize(timestampObj)).toBe(timestampStr);
+//   });
+
+// test('serializes inactive timestamp range B', () => {
+//   const timestampStr = '[2017-10-31 Tue 20:45-21:37]';
+//   const timestampObj = gimmeTimestampObj({
+//     type: OrgTimestamp.INACTIVE_RANGE_B,
+//     date: new OrgDate(2017, 10, 31, 'Tue'),
+//     timeStart: new OrgTime(20, 45),
+//     timeEnd: new OrgTime(21, 37)
+//   });
+//   expect(OrgTimestamp.serialize(timestampObj)).toEqual(timestampStr);
+// });
 // });

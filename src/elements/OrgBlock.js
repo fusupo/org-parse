@@ -1,13 +1,8 @@
-const { randomId } = require('../../utils');
-
 class OrgBlock {
   static get name() {
-    return 'OrgBlock';
+    return 'org.block';
   }
-  static parse(blockData, store) {
-    if (store[OrgBlock.name] === undefined) {
-      store[OrgBlock.name] = {};
-    }
+  static parse(blockData) {
     let result = null;
     let delta = 0;
 
@@ -17,7 +12,7 @@ class OrgBlock {
     );
     if (match !== null) {
       result = {
-        id: randomId(),
+        type: OrgBlock.name,
         name: null,
         data: null,
         contents: null
@@ -30,18 +25,26 @@ class OrgBlock {
         delta = idx + 1;
         result.contents = blockData.slice(1, idx);
       }
-      store[OrgBlock.name][result.id] = result;
     }
 
     return { result, delta };
   }
-  static serialize(orgBlock) {}
-  //--------------------
-  // constructor() {
-  //   this.name = null;
-  //   this.data = null;
-  //   this.contents = null;
-  // }
+  static serialize(orgBlock) {
+    const { name, data, contents } = orgBlock;
+    let ret = '';
+
+    if (name.toLowerCase() === name) {
+      ret = `#+begin_${name} ${data}\n`;
+      ret += contents.join('\n');
+      ret += `\n#+end_${name}`;
+    } else if (name.toUpperCase() === name) {
+      ret = `#+BEGIN_${name} ${data}\n`;
+      ret += contents.join('\n');
+      ret += `\n#+END_${name}`;
+    }
+
+    return ret;
+  }
 }
 
 module.exports = OrgBlock;

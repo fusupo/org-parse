@@ -1,4 +1,3 @@
-const { randomId } = require('../../utils');
 const OrgTimestamp = require('../objects/OrgTimestamp');
 
 const parseEntryText = lines => {
@@ -11,7 +10,8 @@ const parseEntryText = lines => {
   }
   return text;
 };
-const parseStateEntry = (lines, store, result) => {
+
+const parseStateEntry = (lines, result) => {
   let ret;
   let headline = lines[0];
   headline = headline.substr(8);
@@ -27,11 +27,9 @@ const parseStateEntry = (lines, store, result) => {
         type: 'state',
         state: headlineParts[0],
         from: headlineParts[2],
-        timestamp: OrgTimestamp.parse(ts, store).id,
+        timestamp: OrgTimestamp.parse(ts),
         text: ''
       };
-
-      // if (store) ret.timestamp.addToRef(result, 'logbook:state');
 
       break;
     case 2:
@@ -40,11 +38,9 @@ const parseStateEntry = (lines, store, result) => {
         type: 'state',
         state: headlineParts[0],
         from: 'undefined',
-        timestamp: OrgTimestamp.parse(ts, store).id,
+        timestamp: OrgTimestamp.parse(ts),
         text: ''
       };
-
-      // if (store) ret.timestamp.addToRef(result, 'logbook:state');
 
       break;
     default:
@@ -63,7 +59,8 @@ const parseStateEntry = (lines, store, result) => {
 
   return ret;
 };
-const parseNoteEntry = (lines, store, result) => {
+
+const parseNoteEntry = (lines, result) => {
   // D.R.Y !!!!!!
   let ret;
   let headline = lines[0];
@@ -72,18 +69,14 @@ const parseNoteEntry = (lines, store, result) => {
   const ts = headline.substr(tssIdx, tseIdx - tssIdx + 1);
   ret = {
     type: 'note',
-    timestamp: OrgTimestamp.parse(ts, store).id //ts
+    timestamp: OrgTimestamp.parse(ts)
   };
   ret.text = parseEntryText(lines);
-
-  // if (store) {
-  //   ret.timestamp.addToRef(result, 'logbook:note');
-  // }
 
   return ret;
 };
 
-const parseClockEntry = (lines, store, result) => {
+const parseClockEntry = (lines, result) => {
   const re = /^CLOCK: (\[[0-9]{4}-[0-9]{2}-[0-9]{2} [a-zA-Z]{3} [0-9]{2}:[0-9]{2}\])(?:--(\[[0-9]{4}-[0-9]{2}-[0-9]{2} [a-zA-Z]{3} [0-9]{2}:[0-9]{2}\]) =>  ([0-9:]*))*/m;
   let ret;
 
@@ -91,29 +84,24 @@ const parseClockEntry = (lines, store, result) => {
   let reRes = re.exec(headline);
   ret = {
     type: 'clock',
-    start: OrgTimestamp.parse(reRes[1], store).id,
-    end: OrgTimestamp.parse(reRes[2], store).id,
+    start: OrgTimestamp.parse(reRes[1]),
+    end: OrgTimestamp.parse(reRes[2]),
     duration: reRes[3]
   };
 
-  // if (store) ret.start.addToRef(result, 'logbook:clock:start');
-  // if (store) ret.end.addToRef(result, 'logbook:clock:end');
-
   return ret;
 };
+
 class OrgLogbook {
   static get name() {
-    return 'OrgLogbook';
+    return 'org.logbook';
   }
-  static parse(logbookData, store = false) {
-    if (store[OrgLogbook.name] === undefined) {
-      store[OrgLogbook.name] = {};
-    }
+  static parse(logbookData) {
     let result = null;
     let delta = 0;
     if (logbookData[0] === ':LOGBOOK:') {
       result = {
-        id: randomId(),
+        type: OrgLogbook.name,
         items: []
       };
       let idx = logbookData.indexOf(':END:');
@@ -131,7 +119,7 @@ class OrgLogbook {
           ) {
             clockBlock.push(range.shift());
           }
-          result.items.push(parseClockEntry(clockBlock, store, result));
+          result.items.push(parseClockEntry(clockBlock, result));
         } else if (currLine.startsWith('- Note')) {
           let noteBlock = [currLine];
           while (
@@ -142,7 +130,7 @@ class OrgLogbook {
           ) {
             noteBlock.push(range.shift());
           }
-          result.items.push(parseNoteEntry(noteBlock, store, result));
+          result.items.push(parseNoteEntry(noteBlock, result));
         } else if (currLine.startsWith('- State')) {
           let stateBlock = [currLine];
           while (
@@ -153,19 +141,46 @@ class OrgLogbook {
           ) {
             stateBlock.push(range.shift());
           }
-          result.items.push(parseStateEntry(stateBlock, store, result));
+          result.items.push(parseStateEntry(stateBlock, result));
         } else {
           console.log('dont know what to do');
         }
       }
-
-      store[OrgLogbook.name][result.id] = result;
     }
     return { result, delta };
   }
 
   static serialize(orgLogbook) {
-    return '';
+    const { items } = orgLogbook;
+    let ret = ':LOGBOOK:\n';
+
+    if (items) {
+      items.forEach((i, idx) => {
+        switch (i.type) {
+          case 'state':
+            ret += `- State ${i.state} from ${i.from} ${OrgTimestamp.serialize(
+              i.timestamp
+            )} ${i.text}`;
+            break;
+          case 'note':
+            ret += `- Note taken on ${OrgTimestamp.serialize(
+              i.timestamp
+            )} \\\\\n  ${i.text}`;
+            break;
+          case 'clock':
+            ret += `CLOCK: ${OrgTimestamp.serialize(
+              i.start
+            )}--${OrgTimestamp.serialize(i.end)} ${i.duration}`;
+            break;
+          default:
+            break;
+        }
+        ret += '\n';
+      });
+    }
+
+    ret += ':END:';
+    return ret;
   }
   //--------------------
   constructor() {

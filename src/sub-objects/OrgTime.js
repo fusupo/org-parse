@@ -1,13 +1,10 @@
-const { padStartMaybe, randomId } = require('../../utils');
+const { padStartMaybe } = require('../../utils');
 
 class OrgTime {
   static get name() {
-    return 'OrgTime';
+    return 'org.time';
   }
-  static parse(timeStr, store) {
-    if (store[OrgTime.name] === undefined) {
-      store[OrgTime.name] = {};
-    }
+  static parse(timeStr) {
     // assuming well formed timeStr
     // something like 12:12 or
     // 09:00 or
@@ -16,18 +13,8 @@ class OrgTime {
     let [hh, mm] = parts;
     hh = parseInt(hh);
     mm = parseInt(mm);
+    let ret = { type: OrgTime.name, hh, mm };
 
-    const prexisting = Object.values(store[OrgTime.name]).find(time => {
-      return time.hh === hh && time.mm === mm;
-    });
-
-    let ret;
-    if (prexisting) {
-      ret = prexisting;
-    } else {
-      ret = { id: randomId(), hh, mm };
-      store[OrgTime.name][ret.id] = ret;
-    }
     return ret;
   }
 

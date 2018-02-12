@@ -1,21 +1,16 @@
-const { randomId } = require('../utils');
-
 const OrgSection = require('./OrgSection');
-const OrgHeadLine = require('./OrgHeadline');
+const OrgHeadline = require('./OrgHeadline');
 
 //let documents = [];
 
 class OrgDocument {
   static get name() {
-    return 'OrgDocument';
+    return 'org.document';
   }
-  static parse(documentStr, store) {
-    if (store[OrgDocument.name] === undefined) {
-      store[OrgDocument.name] = {};
-    }
 
+  static parse(documentStr) {
     const ret = {
-      id: randomId(),
+      type: OrgDocument.name,
       section: null,
       headlines: null
     };
@@ -26,58 +21,34 @@ class OrgDocument {
     let section = null;
     let firstPart = nodesSrc[0];
     if (!firstPart.startsWith('*')) {
-      section = OrgSection.parse(firstPart, store);
-      section.document = ret.id;
+      section = OrgSection.parse(firstPart);
+      //      section.document = ret;
     }
 
     // parse subsequent headlines
     let headlines = [];
     for (let idx = section === null ? 0 : 1; idx < nodesSrc.length; idx++) {
-      let headline = OrgHeadLine.parse(nodesSrc[idx], store);
-      headlines.push(headline.id);
-      headline.document = ret.id;
+      let headline = OrgHeadline.parse(nodesSrc[idx]);
+      headlines.push(headline);
+      //     headline.document = ret;
     }
 
-    ret.section = section.id;
+    ret.section = section && section;
     ret.headlines = headlines;
-
-    store[OrgDocument.name][ret.id] = ret;
 
     return ret;
   }
 
-  static serialize(orgDocument, store) {
+  static serialize(orgDocument) {
     // !! assuming well formed dateObj
-    var sectionStr = OrgSection.serializeId(orgDocument.section, store);
+
+    var sectionStr = OrgSection.serialize(orgDocument.section);
     var headlines = orgDocument.headlines;
     var headlineStrs = headlines.map(h => {
-      return OrgHeadline.serializeId(h, stor);
+      return OrgHeadline.serialize(h);
     });
-    return sectionStr + headlineStrs.join('\n');
+    return sectionStr + '\n' + headlineStrs.join('\n');
   }
-
-  //--------------------
-
-  // static addDocument(document) {
-  //   documents.push(document);
-  // }
-
-  // static removeDocument(docOrId) {
-  // if (docOrId instanceof OrgDocument) {
-  //   documents[docOrId.id];
-  // } else if (typeof docOrId === 'string') {
-  //   documents[docOrId];
-  // }
-  // }
-
-  // static get documents() {
-  //   return documents;
-  // }
-  //--------------------
-  // constructor() {
-  //   this.section = null;
-  //   this.headlines = null;
-  // }
 }
 
 module.exports = OrgDocument;

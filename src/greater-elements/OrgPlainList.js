@@ -1,5 +1,3 @@
-const { randomId } = require('../../utils');
-
 let result = null;
 let space_maybe_re = / ?/;
 let value_maybe_re = /([\S\s]+)?/;
@@ -36,13 +34,9 @@ let orderedList_re = new RegExp(
 
 class OrgListItem {
   static get name() {
-    return 'OrgListItem';
+    return 'org.plainList.item';
   }
-  static parse(listItemData, store) {
-    if (store[OrgListItem.name] === undefined) {
-      store[OrgListItem.name] = {};
-    }
-
+  static parse(listItemData) {
     let firstLine = listItemData[0];
 
     let match = null;
@@ -59,37 +53,51 @@ class OrgListItem {
     let unorderedListMatch = unorderedList_re.exec(firstLine);
     let orderedListMatch = orderedList_re.exec(firstLine);
 
-    let baseIndent = indentation_re.exec(firstLine)[1].length;
-    // console.log(listItemData[0]);
-    // console.log(unorderedListMatch);
-    // console.log(orderedListMatch);
+    let baseIndentLength = indentation_re.exec(firstLine)[1].length;
 
     if (
-      unorderedListMatch !== null &&
-      (unorderedListMatch[5] === undefined ||
-        (!unorderedListMatch[5].startsWith('Note taken on [') &&
-          !unorderedListMatch[5].startsWith('State "')))
+      unorderedListMatch !== null
+      // Note: it seems this all may be less than necessary, i.e. why check if we've
+      // improperly recognized a logbook entry as the start of a plainlist when
+      // OrgLogbook.parse only deals with content between the ':LOGBOOK:' and ':END:'
+      // delimeters...otherwise, despite the fact that it may have a similar format to
+      // a logbook entry, it may be the case that it is still just sub heading
+      // underneath plainlist
+      //&&
+      // unorderedListMatch[5] === undefined
+      //  ||
+      // (!unorderedListMatch[5].startsWith('Note taken on [') &&
+      //  !unorderedListMatch[5].startsWith('State "'))
     ) {
-      //console.log('UNORDERED: ', firstLine);
-      //console.log(unorderedListMatch);
+      // console.log(unorderedListMatch);
       //value = firstLine;
-      if (listItemData.length > 1) {
-        let res = OrgPlainList.parse(listItemData.slice(1), store);
-        list = res.result && res.result.id;
-      }
       match = unorderedListMatch;
       indentation = match[1].length;
       bullet = match[2];
       checkbox = match[3] || null;
       tag = match[4] || null;
       value = match[5] || null;
+
+      if (listItemData.length > 1) {
+        let idx = 1;
+        let foundList = false;
+        do {
+          let res = OrgPlainList.parse(listItemData.slice(idx));
+          if (res.result === null) {
+            if (list === null) list = [];
+            console.log(listItemData);
+            list.push(OrgListItem.parse([listItemData[idx]]));
+          } else {
+            if (list === null) list = [];
+            list = list.concat(res.result.items);
+            foundList = true;
+          }
+          idx++;
+        } while (idx < listItemData.length && !foundList);
+      }
     } else if (orderedListMatch !== null) {
       //console.log('ORDERED: ', firstLine);
       //value = firstLine;
-      if (listItemData.length > 1) {
-        let res = OrgPlainList.parse(listItemData.slice(1), store);
-        list = res.result && res.result.id;
-      }
       //console.log(orderedListMatch);
       //console.log(res);
       match = orderedListMatch;
@@ -101,15 +109,33 @@ class OrgListItem {
       checkbox = match[5] || null;
       tag = match[6] || null;
       value = match[7] || null;
+
+      if (listItemData.length > 1) {
+        let idx = 1;
+        let foundList = false;
+        do {
+          let res = OrgPlainList.parse(listItemData.slice(idx));
+          if (res.result === null) {
+            if (list === null) list = [];
+            list.push(OrgListItem.parse([listItemData[idx]]));
+          } else {
+            if (list === null) list = [];
+            list = list.concat(res.result.items);
+            foundList = true;
+          }
+          idx++;
+        } while (idx < listItemData.length && !foundList);
+      }
     } else {
       // neither ordered nor unoredered
-      if (baseIndent > 0) {
-        value = firstLine;
+      if (baseIndentLength > 0) {
+        value = firstLine.substr(baseIndentLength);
+        value = value === '' ? firstLine : value;
       }
     }
 
     let result = {
-      id: randomId(),
+      type: OrgListItem.name,
       counter,
       bullet,
       counterSet,
@@ -119,7 +145,6 @@ class OrgListItem {
       list
     };
 
-    store[OrgListItem.name][result.id] = result;
     return result;
   }
 
@@ -131,55 +156,56 @@ class OrgListItem {
 
 class OrgPlainList {
   static get name() {
-    return 'OrgPlainList';
+    return 'org.plainList';
   }
-  static parse(plainlistData, store) {
+
+  static parse(plainlistData) {
     let firstLine = plainlistData[0];
     let isListItem =
       orderedList_re.exec(firstLine) !== null ||
       unorderedList_re.exec(firstLine) !== null;
     if (!isListItem) return { result: null, delta: 0 };
 
-    if (store[OrgPlainList.name] === undefined) {
-      store[OrgPlainList.name] = {};
-    }
-
     // data coming in as an array of strings, each representing a line of text
     // from the original document
 
     let result = {
-      id: randomId(),
+      type: OrgPlainList.name,
       items: null
     };
     let delta = -1;
-
-    //console.log(plainlistData);
 
     //find break
     let idx = 0;
     let emptyLineCount = 0;
     let zeroIndentText = false;
     do {
-      let foo = plainlistData.slice(idx)[0];
+      let line = plainlistData.slice(idx)[0];
       let isListItem =
-        orderedList_re.exec(foo) !== null ||
-        unorderedList_re.exec(foo) !== null;
+        orderedList_re.exec(line) !== null ||
+        unorderedList_re.exec(line) !== null;
 
       if (!isListItem) {
-        let indentation = indentation_re.exec(foo);
-        if (indentation[1].length === 0) {
-          if (foo === '') {
+        let indent = indentation_re.exec(line);
+        let indentLength = indent[1].length;
+        if (indentLength === 0) {
+          if (line.length > 0) {
+            zeroIndentText = true;
+            emptyLineCount = 0;
+          } else {
+            emptyLineCount++;
+          }
+        } else {
+          let lineMinusIndent = line.substr(indentLength);
+          if (lineMinusIndent.length === 0) {
             emptyLineCount++;
           } else {
             emptyLineCount = 0;
-            zeroIndentText = true;
           }
-        } else {
-          emptyLineCount = 0;
         }
+      } else {
+        emptyLineCount = 0;
       }
-
-      //console.log(emptyLineCount, foo, isListItem);
       idx++;
     } while (
       idx < plainlistData.length &&
@@ -188,7 +214,7 @@ class OrgPlainList {
     );
 
     if (emptyLineCount === 2) {
-      delta = idx - 2;
+      delta = idx - 1;
     } else if (zeroIndentText) {
       delta = idx - 1;
     } else if (idx === plainlistData.length) {
@@ -196,34 +222,56 @@ class OrgPlainList {
     }
 
     let workingSet = plainlistData.slice(0, delta);
-    let baseIndent = indentation_re.exec(workingSet[0])[1].length;
+    let baseIndentLength = indentation_re.exec(workingSet[0])[1].length;
     let groups = [];
-    idx = 0;
-    do {
-      let currLine = workingSet.slice(idx)[0];
-      let currIndent = indentation_re.exec(currLine)[1].length;
-      if (currIndent === baseIndent && currLine !== '') {
+
+    for (let i = 0; i < workingSet.length; i++) {
+      let currLine = workingSet.slice(i)[0];
+      let currIndentLength = indentation_re.exec(currLine)[1].length;
+      let currLineMinusIndent = currLine.substr(currIndentLength);
+
+      // console.log(currLine.length, currIndentLength);
+
+      if (currIndentLength === baseIndentLength && currLineMinusIndent !== '') {
         groups.push([currLine]);
-      } else if (currIndent > baseIndent || currLine === '') {
+      } else if (
+        currIndentLength > baseIndentLength ||
+        currLineMinusIndent === ''
+      ) {
         if (groups.length === 0) groups.push([]);
         groups[groups.length - 1].push(currLine);
       } else {
         // this shouldn't happen, but I think its the end of the list somehow
       }
-      idx++;
-    } while (idx < workingSet.length);
+    }
 
-    // console.log(workingSet, baseIndent);
     // console.log(groups);
 
     result.items = groups.map(g => {
-      return OrgListItem.parse(g, store).id;
+      return OrgListItem.parse(g);
     });
 
-    store[OrgPlainList.name][result.id] = result;
     return { result, delta };
   }
-  static serialize(orgPlainlist) {}
+  static serialize(orgPlainlist) {
+    let ret = '';
+    if (orgPlainlist.items) {
+      orgPlainlist.items.forEach((i, idx) => {
+        ret += `${idx > 0 ? '\n' : ''}${i.bullet} ${i.value}`;
+        if (i.list) {
+          let sublist = OrgPlainList.serialize(
+            Object.assign({}, { items: i.list })
+          );
+          sublist = sublist
+            .split('\n')
+            .map(s => '  ' + s)
+            .join('\n');
+          ret += '\n' + sublist;
+        }
+      });
+    }
+    return ret;
+  }
 }
 
 module.exports = OrgPlainList;

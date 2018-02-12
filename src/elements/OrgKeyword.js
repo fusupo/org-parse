@@ -1,12 +1,12 @@
-const { randomId } = require('../../utils');
 class OrgKeyword {
   static get name() {
-    return 'OrgKeyword';
+    return 'org.keyword';
   }
-  static parse(src, store) {
-    if (store[OrgKeyword.name] === undefined) {
-      store[OrgKeyword.name] = {};
-    }
+  static parse(src) {
+    //, store) {
+    // if (store[OrgKeyword.name] === undefined) {
+    //   store[OrgKeyword.name] = {};
+    // }
 
     let keywordStr;
     let result = null;
@@ -19,15 +19,19 @@ class OrgKeyword {
     }
     let match = /\#\+([\w]+)\:(?: ([^\n\r]*))?/.exec(keywordStr);
     if (match !== null) {
-      result = { id: randomId() };
+      result = {
+        type: OrgKeyword.name
+      };
       result.key = match[1];
-      result.value = match[2] || null;
+      result.value = (match[2] && match[2].trim()) || null;
       delta = 1;
-      store[OrgKeyword.name][result.id] = result;
+      //store[OrgKeyword.name][result.id] = result;
     }
     return { result, delta };
   }
-  static serialize(keywordObj) {}
+  static serialize(orgKeyword) {
+    return `#+${orgKeyword.key}: ${orgKeyword.value}`;
+  }
 }
 
 module.exports = OrgKeyword;

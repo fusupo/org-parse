@@ -1,23 +1,17 @@
-const { randomId } = require('../../utils');
 const OrgTableCell = require('../objects/OrgTableCell');
 
 class OrgTableRow {
   static get RULE() {
-    return 'rule';
+    return OrgTableRow.name + '.rule';
   }
   static get STANDARD() {
-    return 'standard';
+    return OrgTableRow.name + '.standard';
   }
   static get name() {
-    return 'OrgTableRow';
+    return 'org.table.row';
   }
-  static parse(tableRowStr, store) {
-    if (store[OrgTableRow.name] === undefined) {
-      store[OrgTableRow.name] = {};
-    }
-
+  static parse(tableRowStr) {
     const ret = {
-      id: randomId(),
       type: null,
       cells: []
     };
@@ -31,9 +25,9 @@ class OrgTableRow {
         const currCellStr = tableRowStr.substr(0, idxPlus + 1);
         tableRowStr = tableRowStr.substr(idxPlus + 1);
         idxPlus = tableRowStr.indexOf('+');
-        ret.cells.push(OrgTableCell.parse(currCellStr, store).id);
+        ret.cells.push(OrgTableCell.parse(currCellStr));
       }
-      ret.cells.push(OrgTableCell.parse(tableRowStr, store).id);
+      ret.cells.push(OrgTableCell.parse(tableRowStr));
     } else {
       ret.type = OrgTableRow.STANDARD;
       let idxPlus = tableRowStr.indexOf('|');
@@ -41,11 +35,10 @@ class OrgTableRow {
         const currCellStr = tableRowStr.substr(0, idxPlus + 1);
         tableRowStr = tableRowStr.substr(idxPlus + 1);
         idxPlus = tableRowStr.indexOf('|');
-        ret.cells.push(OrgTableCell.parse(currCellStr, store).id);
+        ret.cells.push(OrgTableCell.parse(currCellStr));
       }
     }
 
-    store[OrgTableRow.name][ret.id] = ret;
     return ret;
   }
 

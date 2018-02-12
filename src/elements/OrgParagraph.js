@@ -1,15 +1,10 @@
-const { randomId } = require('../../utils');
 const orderedList_re = /^ *[0-9]+[\.\)]{1} /;
 const unorderedList_re = /^ *[\-\+]{1} /;
 class OrgParagraph {
   static get name() {
-    return 'OrgParagraph';
+    return 'org.paragraph';
   }
-  static parse(paragraphData, store) {
-    if (store[OrgParagraph.name] === undefined) {
-      store[OrgParagraph.name] = {};
-    }
-
+  static parse(paragraphData) {
     let result = null;
     let delta = 0;
     let idx = 0;
@@ -29,21 +24,22 @@ class OrgParagraph {
     }
     if (idx > 0) {
       result = {
-        id: randomId(),
+        type: OrgParagraph.name,
         value: null
       };
       let range = paragraphData.slice(0, idx);
       result.value = range; //.map(..)?
 
       delta = idx;
-      store[OrgParagraph.name][result.id] = result;
+      // store[OrgParagraph.name][result.id] = result;
     }
 
     return { result, delta };
   }
-  //--------------------
-  // constructor() {
-  //   this.value = null;
-  // }
+  static serialize(orgParagraph) {
+    let ret = '';
+    if (orgParagraph.value) ret = orgParagraph.value.join('\n');
+    return ret;
+  }
 }
 module.exports = OrgParagraph;

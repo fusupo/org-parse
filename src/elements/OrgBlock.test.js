@@ -5,7 +5,27 @@ someshit
 foobar
 #+end_src`;
 
-let store = {};
-let parsedObj = OrgBlock.parse(blockStr.split('\n'), store);
-console.log(JSON.stringify(parsedObj.result, null, 1));
-console.log(JSON.stringify(store, null, 2));
+let parsedObj = OrgBlock.parse(blockStr.split('\n'));
+
+describe('has static method "parse"', () => {
+  test('static attribute parse exists', () => {
+    expect(OrgBlock.parse).toBeDefined();
+  });
+  test('static attribute parse is a function', () => {
+    expect(OrgBlock.parse).toBeInstanceOf(Function);
+  });
+});
+
+describe('parses org block', () => {
+  test('parses org block', () => {
+    let parsedObj = OrgBlock.parse(blockStr.split('\n'));
+    expect(parsedObj).toEqual({
+      result: {
+        name: 'src',
+        data: 'plantuml :file tryout.png',
+        contents: ['someshit', 'foobar']
+      },
+      delta: 4
+    });
+  });
+});

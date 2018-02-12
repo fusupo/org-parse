@@ -1,4 +1,3 @@
-const { randomId } = require('../utils');
 const OrgGreaterBlock = require('./greater-elements/OrgGreaterBlock');
 const OrgPropDrawer = require('./greater-elements/OrgPropDrawer');
 const OrgLogbook = require('./greater-elements/OrgLogbook');
@@ -45,13 +44,13 @@ const greaterElements = [
 
 const elements = [OrgKeyword, OrgPlanning, OrgBlock, OrgParagraph];
 
-const tryParseGreaterElement = (lines, store = false) => {
+const tryParseGreaterElement = lines => {
   let idx = 0;
   let result = null;
   let delta;
   //console.log(lines);
   while (idx < greaterElements.length && result === null) {
-    let res = greaterElements[idx].parse(lines, store);
+    let res = greaterElements[idx].parse(lines);
     result = res.result;
     delta = res.delta;
     idx++;
@@ -59,13 +58,13 @@ const tryParseGreaterElement = (lines, store = false) => {
   return { result, delta };
 };
 
-const tryParseElement = (lines, store = false) => {
+const tryParseElement = lines => {
   let idx = 0;
   let result = null;
   let delta = 0;
   let name = null;
   do {
-    let res = elements[idx].parse(lines, store);
+    let res = elements[idx].parse(lines);
     result = res.result;
     delta = res.delta;
     name = elements[idx].name;
@@ -76,15 +75,12 @@ const tryParseElement = (lines, store = false) => {
 
 class OrgSection {
   static get name() {
-    return 'OrgSection';
+    return 'org.section';
   }
-  static parse(sectionStr, store = false) {
-    if (store[OrgSection.name] === undefined) {
-      store[OrgSection.name] = {};
-    }
+  static parse(sectionStr) {
     const lines = sectionStr.split('\n');
     const ret = {
-      id: randomId(),
+      type: OrgSection.name,
       children: []
     };
 
@@ -92,32 +88,28 @@ class OrgSection {
     let idx = 0;
     while (idx < lines.length) {
       let currLine = lines[idx];
-      //console.log(currLine);
       let isOnlyWhitespace = /^\s+$/.exec(currLine) !== null;
       let isEmptyString = currLine === '';
 
       if (!isOnlyWhitespace && !isEmptyString) {
-        let { name, result, delta } = tryParseGreaterElement(
-          lines.slice(idx),
-          store
-        );
-        // console.log('!!!!!!!!!!!!--->', result, delta);
+        let { name, result, delta } = tryParseGreaterElement(lines.slice(idx));
+        //console.log('!!!!!!!!!!!!--->', result, delta);
         if (result !== null) {
-          ret.children.push(result.id);
-          result.section = ret.id;
+          ret.children.push(result);
+          //result.section = ret;
           idx += delta;
 
           continue;
         } else {
-          let elem = tryParseElement(lines.slice(idx), store);
+          let elem = tryParseElement(lines.slice(idx));
 
           name = elem.name;
           result = elem.result;
           delta = elem.delta;
 
           if (result !== null) {
-            ret.children.push(result.id);
-            result.section = ret.id;
+            ret.children.push(result);
+            // result.section = ret;
           }
 
           idx += delta === 0 ? 1 : delta;
@@ -127,20 +119,50 @@ class OrgSection {
         idx++;
       }
     }
-    store[OrgSection.name][ret.id] = ret;
     return ret;
   }
 
-  static serialize(sectionObj) {
-    return ``;
+  static serialize(orgSection) {
+    var ret = '';
+    //    console.log(orgSection);
+    if (!orgSection) return '';
+
+    ret = orgSection.children.map(o => {
+      let r = '';
+      switch (o.type) {
+        case OrgKeyword.name:
+          r = OrgKeyword.serialize(o);
+          break;
+        case OrgPlanning.name:
+          r = OrgPlanning.serialize(o);
+          break;
+        case OrgPropDrawer.name:
+          r = OrgPropDrawer.serialize(o);
+          break;
+        case OrgTable.name:
+          r = OrgTable.serialize(o);
+          break;
+        case OrgParagraph.name:
+          r = OrgParagraph.serialize(o);
+          break;
+        case OrgPlainList.name:
+          r = OrgPlainList.serialize(o);
+          break;
+        case OrgBlock.name:
+          r = OrgBlock.serialize(o);
+          break;
+        case OrgLogbook.name:
+          r = OrgLogbook.serialize(o);
+          break;
+        default:
+          console.log('UNHANDLED TYPE AT ORGSECTION SERIALIZE:', o.type);
+          break;
+      }
+      return r;
+    });
+
+    return ret.join('\n');
   }
-
-  //--------------------
-  // constructor() {
-  //   this.children = [];
-
-  //   //this.document = null;
-  // }
 }
 
 module.exports = OrgSection;

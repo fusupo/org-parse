@@ -1,47 +1,33 @@
-const { padStartMaybe, randomId } = require('../../utils');
+const { padStartMaybe } = require('../../utils');
 const moment = require('moment');
 
 class OrgDate {
   static get name() {
-    return 'OrgDate';
+    return 'org.date';
   }
-  static parse(dateStr, store) {
-    if (store[OrgDate.name] === undefined) {
-      store[OrgDate.name] = {};
-    }
-
+  static parse(dateStr) {
     // assuming well formed dateStr
 
     const parts = dateStr.split(' ');
     const [yyyy, mm, dd] = parts[0].split('-');
 
-    const prexisting = Object.values(store[OrgDate.name]).find(foo => {
-      return foo.yyyy === +yyyy && foo.mm === +mm && foo.dd === +dd;
-    });
-
     let ret;
-    if (prexisting) {
-      ret = prexisting;
-    } else {
-      ret = {
-        id: randomId(),
-        yyyy: null,
-        mm: null,
-        dd: null,
-        dayName: null
-      };
-      ret.yyyy = parseInt(yyyy);
-      ret.mm = parseInt(mm);
-      ret.dd = parseInt(dd);
-      ret.dayName = parts[1];
-
-      store[OrgDate.name][ret.id] = ret;
-    }
+    ret = {
+      type: OrgDate.name,
+      yyyy: null,
+      mm: null,
+      dd: null,
+      dayName: null
+    };
+    ret.yyyy = parseInt(yyyy);
+    ret.mm = parseInt(mm);
+    ret.dd = parseInt(dd);
+    ret.dayName = parts[1];
 
     return ret;
   }
 
-  static serialize(dateObj, store) {
+  static serialize(dateObj) {
     // !! assuming well formed dateObj
     let { yyyy, mm, dd, dayName } = dateObj;
     return `${yyyy}-${padStartMaybe(mm.toString(), 2, '0')}-${padStartMaybe(
