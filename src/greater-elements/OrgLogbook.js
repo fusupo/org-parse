@@ -110,6 +110,7 @@ class OrgLogbook {
       while (range.length > 0) {
         let currLine = range.shift();
         if (currLine.startsWith('CLOCK:')) {
+          // TODO: handle attached text under clock entries
           let clockBlock = [currLine];
           while (
             range.length > 0 &&
@@ -160,17 +161,18 @@ class OrgLogbook {
           case 'state':
             ret += `- State ${i.state} from ${i.from} ${OrgTimestamp.serialize(
               i.timestamp
-            )} ${i.text}`;
+            )}`;
+            if (i.text) ret += `\n  ${i.text}`;
             break;
           case 'note':
             ret += `- Note taken on ${OrgTimestamp.serialize(
               i.timestamp
-            )} \\\\\n  ${i.text}`;
+            )} \\\\\n  ${i.text.split('\n').join('\n  ')}`;
             break;
           case 'clock':
             ret += `CLOCK: ${OrgTimestamp.serialize(
               i.start
-            )}--${OrgTimestamp.serialize(i.end)} ${i.duration}`;
+            )}--${OrgTimestamp.serialize(i.end)} =>  ${i.duration}`;
             break;
           default:
             break;

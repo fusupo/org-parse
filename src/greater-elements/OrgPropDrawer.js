@@ -37,10 +37,17 @@ class OrgPropDrawer {
   }
 
   static serialize(orgPropDrawer) {
+    console.log(
+      'SERIALIZE PROP DRAWER:',
+      orgPropDrawer,
+      Object.entries,
+      Object.keys
+    );
     // if (orgPropDrawer.props) {
     let ret = ':PROPERTIES:\n';
     if (orgPropDrawer.props)
-      Object.entries(orgPropDrawer.props).forEach(([key, val]) => {
+      Object.keys(orgPropDrawer.props).forEach(key => {
+        const val = orgPropDrawer.props[key];
         ret += `:${key}: `;
         if (typeof val === 'object') {
           ret += OrgTimestamp.serialize(val);

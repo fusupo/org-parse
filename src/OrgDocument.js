@@ -40,8 +40,6 @@ class OrgDocument {
   }
 
   static serialize(orgDocument) {
-    // !! assuming well formed dateObj
-
     var sectionStr = OrgSection.serialize(orgDocument.section);
     var headlines = orgDocument.headlines;
     var headlineStrs = headlines.map(h => {

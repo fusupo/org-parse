@@ -125,8 +125,7 @@ class OrgSection {
   static serialize(orgSection) {
     var ret = '';
     //    console.log(orgSection);
-    if (!orgSection) return '';
-
+    if (!orgSection || !orgSection.children) return '';
     ret = orgSection.children.map(o => {
       let r = '';
       switch (o.type) {
@@ -155,7 +154,7 @@ class OrgSection {
           r = OrgLogbook.serialize(o);
           break;
         default:
-          console.log('UNHANDLED TYPE AT ORGSECTION SERIALIZE:', o.type);
+          console.log('UNHANDLED TYPE AT ORG-SECTION SERIALIZE:', o.type);
           break;
       }
       return r;
