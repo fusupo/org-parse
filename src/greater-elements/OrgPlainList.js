@@ -254,13 +254,23 @@ class OrgPlainList {
     return { result, delta };
   }
   static serialize(orgPlainlist) {
+    // TODO; this need some work to acheive parity,
+    // dunno if I have it in my right now though [2018-02-24 Sat 20:37]
     let ret = '';
     if (orgPlainlist.items) {
       orgPlainlist.items.forEach((i, idx) => {
-        ret += `${idx > 0 ? '\n' : ''}${i.bullet} ${i.value}`;
-        if (i.list) {
+        let { counter, bullet, counterSet, checkbox, tag, value, list } = i;
+        counter = counter || '';
+        bullet = bullet || '';
+        counterSet = counterSet ? ` [@${counterSet}]` : '';
+        checkbox = checkbox ? ` [${checkbox}]` : '';
+        tag = tag ? ` ${tag} ::` : '';
+        ret += `${idx > 0
+          ? '\n'
+          : ''}${counter}${bullet}${counterSet}${checkbox}${tag} ${value}`;
+        if (list) {
           let sublist = OrgPlainList.serialize(
-            Object.assign({}, { items: i.list })
+            Object.assign({}, { items: list })
           );
           sublist = sublist
             .split('\n')
