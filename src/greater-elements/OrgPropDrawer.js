@@ -49,6 +49,11 @@ class OrgPropDrawer {
       Object.keys(orgPropDrawer.props).forEach(key => {
         const val = orgPropDrawer.props[key];
         ret += `:${key}: `;
+
+        const padNum = 11 - (key.length + 3);
+        const pad = padNum > 0 ? new Array(padNum).fill(' ').join('') : '';
+        ret += pad;
+
         if (typeof val === 'object') {
           ret += OrgTimestamp.serialize(val);
         } else {
