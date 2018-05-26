@@ -1,8 +1,7 @@
 const OrgSection = require('./OrgSection');
 const padStartMaybe = require('../utils').padStartMaybe;
 
-const keywords = [
-  'PROJ',
+const default_keywords = [
   'TODO',
   'NEXT',
   'STARTED',
@@ -12,20 +11,16 @@ const keywords = [
   'CANCELLED',
   'TODELEGATE',
   'DELEGATED',
-  'COMPLETE',
-  'LAYOUT',
-  'VIEW',
-  'FILE',
-  'EMAIL'
+  'COMPLETE'
 ];
-
-const headlines = {};
 
 class OrgHeadline {
   static get name() {
     return 'org.headline';
   }
-  static parse(headlineStr) {
+
+  static parse(headlineStr, additional_keywords = []) {
+    const keywords = default_keywords.concat(additional_keywords);
     let ret = {
       type: OrgHeadline.name,
       stars: null,
@@ -52,7 +47,7 @@ class OrgHeadline {
     // parse stars
     let match = /^\*+ /.exec(srcStr);
     ret.stars = match[0].length - 1;
-    srcStr = srcStr.substr(ret.stars + 1); //.trim();
+    srcStr = srcStr.substr(ret.stars + 1);
 
     if (srcStr.length === 0) return ret;
 
@@ -97,9 +92,6 @@ class OrgHeadline {
       srcStr = srcStr.substr(0, firstMatch.index).trim();
     }
 
-    // still want to parse (at least children) even if headline is empty, per se
-    //if (srcStr.length === 0) return ret;
-
     // parse title
     if (srcStr.indexOf('COMMENT ') === 0) {
       ret.comment = true;
@@ -116,10 +108,8 @@ class OrgHeadline {
       while (nodesSrc[0] === '') nodesSrc.shift();
       let firstPart = nodesSrc[0];
       if (!firstPart.startsWith('*')) {
-        //console.log(firstPart);
         let section = OrgSection.parse(firstPart);
         ret.section = section;
-        // section.headline = ret;
       }
 
       // parse subsequent headlines
@@ -132,7 +122,6 @@ class OrgHeadline {
         // parseHeadline
         let headline = OrgHeadline.parse(nodesSrc[idx]);
         ret.children.push(headline);
-        // headline.parent = ret;
       }
     }
 
@@ -177,25 +166,6 @@ class OrgHeadline {
     }
 
     return ret;
-  }
-  //--------------------
-  static addHeadline(orgHeadline) {}
-  static removeHeadline(headlineOrId) {}
-  static get headlines() {
-    return headlines;
-  }
-  //--------------------
-  constructor() {
-    this.stars = null;
-    this.keyword = null;
-    this.priority = null;
-    this.comment = false;
-    this.title = null;
-    this.tags = null;
-
-    this.section = null;
-    this.children = null;
-    this.parent = null;
   }
 }
 
