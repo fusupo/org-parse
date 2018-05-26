@@ -2,7 +2,7 @@
   "name": "org-parse",
   "version": "2.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "dist/bundle.min.js",
   "scripts": {
     "test": "jest --watch",
     "build": "webpack"

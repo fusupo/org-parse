@@ -20,8 +20,6 @@ const OrgTime = require('./src/sub-objects/OrgTime');
 
 const randomId = require('./utils').randomId;
 
-//--------------------------------------
-
 const parseOrg = srcStr => {
   let doc = OrgDocument.parse(srcStr);
   return doc;
@@ -31,11 +29,6 @@ const serialize = orgDocument => {
   let ret = OrgDocument.serialize(orgDocument);
   return ret;
 };
-
-module.exports.parse = parseOrg;
-module.exports.serialize = serialize;
-
-//--------------------
 
 module.exports.OrgDocument = OrgDocument;
 module.exports.OrgHeadline = OrgHeadline;
@@ -57,4 +50,5 @@ module.exports.OrgTableCell = OrgTableCell;
 module.exports.OrgDate = OrgDate;
 module.exports.OrgTime = OrgTime;
 
-//
+module.exports.parse = parseOrg;
+module.exports.serialize = serialize;
