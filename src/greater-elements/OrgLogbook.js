@@ -159,10 +159,18 @@ class OrgLogbook {
       items.forEach((i, idx) => {
         switch (i.type) {
           case 'state':
-            ret += `- State ${i.state} from ${i.from} ${OrgTimestamp.serialize(
+            const padNum1 = 13 - i.state.length;
+            const pad1 =
+              padNum1 > 0 ? new Array(padNum1).fill(' ').join('') : ' ';
+            const from = i.from && i.from !== 'undefined' ? i.from : '';
+            const padNum2 = 13 - from.length;
+            const pad2 =
+              padNum2 > 0 ? new Array(padNum2).fill(' ').join('') : ' ';
+
+            ret += `- State ${i.state}${pad1}from ${from}${pad2}${OrgTimestamp.serialize(
               i.timestamp
             )}`;
-            if (i.text) ret += `\n  ${i.text}`;
+            if (i.text) ret += ` \\\\\n  ${i.text.split('\n').join('\n  ')}`;
             break;
           case 'note':
             ret += `- Note taken on ${OrgTimestamp.serialize(
@@ -183,10 +191,6 @@ class OrgLogbook {
 
     ret += ':END:';
     return ret;
-  }
-  //--------------------
-  constructor() {
-    this.items = null;
   }
 }
 
