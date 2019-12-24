@@ -8,7 +8,7 @@ class OrgTable {
     let result = null;
     let delta = 1;
 
-    if (tableData[0].startsWith('|-')) {
+    if (tableData[0].startsWith('|')) {
       result = {
         type: OrgTable.name,
         rows: null,
