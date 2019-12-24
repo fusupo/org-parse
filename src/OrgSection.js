@@ -124,7 +124,6 @@ class OrgSection {
 
   static serialize(orgSection) {
     var ret = '';
-    //    console.log(orgSection);
     if (!orgSection || !orgSection.children) return '';
     ret = orgSection.children.map(o => {
       let r = '';
