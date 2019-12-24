@@ -1,5 +1,5 @@
 const OrgSection = require('./OrgSection');
-const padStartMaybe = require('../utils').padStartMaybe;
+// const padStartMaybe = require('../utils').padStartMaybe;
 
 const default_keywords = [
   'TODO',
@@ -56,7 +56,7 @@ class OrgHeadline {
     let foundKeyword = false;
     do {
       let keyword = keywords[idx];
-      let re = new RegExp(`^${keyword}`, 'gm');
+      let re = new RegExp(`^${keyword} `, 'gm');
       match = re.exec(srcStr);
       if (match !== null) {
         foundKeyword = true;
@@ -69,7 +69,7 @@ class OrgHeadline {
     if (srcStr.length === 0) return ret;
 
     // parse priority cookie
-    match = /^\[\#([ABC])\]/.exec(srcStr);
+    match = /^\[#([ABC])\]/.exec(srcStr);
     if (match != null) {
       ret.priority = match[1];
       srcStr = srcStr.substr(match[0].length).trim();
@@ -78,7 +78,7 @@ class OrgHeadline {
     if (srcStr.length === 0) return ret;
 
     // parse tags
-    let re = /(?:\:)([^\:\n ]*)(?=\:)/g;
+    let re = /(?::)([^:\n ]*)(?=:)/g;
     let firstMatch = re.exec(srcStr);
     if (firstMatch !== null) {
       ret.tags = [];
@@ -123,6 +123,7 @@ class OrgHeadline {
         let headline = OrgHeadline.parse(nodesSrc[idx]);
         ret.children.push(headline);
       }
+      // ret.children = ret.children.length === 0 ? null : ret.children;
     }
 
     return ret;
@@ -146,20 +147,20 @@ class OrgHeadline {
     }
     if (keyword) ret += ` ${keyword}`;
     if (priority) ret += ` [#${priority}]`;
-    if (comment) ret += ` COMMENT`;
+    if (comment) ret += ' COMMENT';
     if (title) ret += ` ${title}`;
     if (tags) {
       let tagsStr = tags.reduce((m, o) => {
         return o ? m + o + ':' : m;
       }, ':');
-      if (tagsStr !== ':') ret += padStartMaybe(` ${tagsStr}`, 80 - ret.length);
+      if (tagsStr !== ':') ret += ` ${tagsStr}`.padStart(80 - ret.length); //padStartMaybe(` ${tagsStr}`, 80 - ret.length);
     }
     if (section) {
       ret += '\n';
       let sectStr = OrgSection.serialize(orgHeadline.section);
       ret += sectStr;
     }
-    if (children) {
+    if (children && children.length) {
       ret += '\n';
       let childStrs = children.map(c => OrgHeadline.serialize(c));
       ret += childStrs.join('\n');
