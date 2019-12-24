@@ -1,14 +1,12 @@
 const OrgSection = require('./OrgSection');
 const OrgHeadline = require('./OrgHeadline');
 
-//let documents = [];
-
 class OrgDocument {
   static get name() {
     return 'org.document';
   }
 
-  static parse(documentStr) {
+  static parse(documentStr, additional_keywords) {
     const ret = {
       type: OrgDocument.name,
       section: null,
@@ -28,7 +26,7 @@ class OrgDocument {
     // parse subsequent headlines
     let headlines = [];
     for (let idx = section === null ? 0 : 1; idx < nodesSrc.length; idx++) {
-      let headline = OrgHeadline.parse(nodesSrc[idx]);
+      let headline = OrgHeadline.parse(nodesSrc[idx], additional_keywords);
       headlines.push(headline);
       //     headline.document = ret;
     }

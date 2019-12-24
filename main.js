@@ -18,10 +18,10 @@ const OrgTableCell = require('./src/objects/OrgTableCell');
 const OrgDate = require('./src/sub-objects/OrgDate');
 const OrgTime = require('./src/sub-objects/OrgTime');
 
-const randomId = require('./utils').randomId;
+//const randomId = require('./utils').randomId;
 
-const parseOrg = srcStr => {
-  let doc = OrgDocument.parse(srcStr);
+const parseOrg = (srcStr, additional_keywords) => {
+  let doc = OrgDocument.parse(srcStr, additional_keywords);
   return doc;
 };
 
