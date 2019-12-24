@@ -37,13 +37,6 @@ class OrgPropDrawer {
   }
 
   static serialize(orgPropDrawer) {
-    console.log(
-      'SERIALIZE PROP DRAWER:',
-      orgPropDrawer,
-      Object.entries,
-      Object.keys
-    );
-    // if (orgPropDrawer.props) {
     let ret = ':PROPERTIES:\n';
     if (orgPropDrawer.props)
       Object.keys(orgPropDrawer.props).forEach(key => {
@@ -64,8 +57,6 @@ class OrgPropDrawer {
 
     ret += ':END:';
     return ret;
-    // }
-    // return '';
   }
 }
 
