@@ -38,7 +38,12 @@ class OrgParagraph {
   }
   static serialize(orgParagraph) {
     let ret = '';
-    if (orgParagraph.value) ret = orgParagraph.value.join('\n');
+    if (orgParagraph.value)
+      ret = orgParagraph.value.reduce((m, line, idx) => {
+        return line !== ''
+          ? idx < orgParagraph.value.length - 1 ? m + line + '\n' : m + line
+          : m;
+      }, '');
     return ret;
   }
 }
